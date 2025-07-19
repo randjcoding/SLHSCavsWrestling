@@ -41,7 +41,11 @@ def contact():
 if __name__ == '__main__':
     # Development server settings
     debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    # Use 0.0.0.0 to bind to all interfaces (accessible from internet when deployed)
+    host = os.environ.get('FLASK_HOST', '0.0.0.0')
+    port = int(os.environ.get('FLASK_PORT', 5000))
+    
     print("🤼 Starting Southern Lee Wrestling website...")
-    print("📱 Local development server: http://127.0.0.1:5000")
+    print(f"📱 Server running on: http://{host}:{port}")
     print("⚔️ Find A Way! - Cavaliers Wrestling")
-    app.run(debug=debug_mode, host='127.0.0.1', port=5000) 
+    app.run(debug=debug_mode, host=host, port=port)
