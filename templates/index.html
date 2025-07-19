@@ -1,0 +1,192 @@
+{% extends "base.html" %} {% block content %}
+<!-- Hero Section -->
+<section class="bg-primary text-white py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold">Southern Lee Wrestling</h1>
+        <h2 class="h3 mb-3">Cavaliers Wrestling</h2>
+        <p class="lead mb-4">
+          Home of the Cavaliers Wrestling Team. Where tradition meets
+          excellence, and every wrestler learns to
+          <strong>"Find A Way"</strong> to succeed on and off the mat.
+        </p>
+        <div class="d-flex gap-3">
+          <a href="{{ url_for('team') }}" class="btn btn-light btn-lg"
+            >Meet Our Cavaliers</a
+          >
+          <a
+            href="{{ url_for('schedule') }}"
+            class="btn btn-outline-light btn-lg"
+            >View Schedule</a
+          >
+        </div>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div class="display-1">⚔️</div>
+        <h3 class="mt-3">Cavaliers Wrestling</h3>
+        <p class="lead"><strong>Find A Way</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Weight Classes Overview -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center mb-5">
+        <h2 class="display-5 fw-bold">Wrestling Excellence</h2>
+        <p class="lead text-muted">
+          Southern Lee Wrestling competes in both Men's and Women's divisions
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h4 class="text-primary">Men's Varsity</h4>
+            <p class="text-muted">
+              Weight Classes: 106, 113, 120, 126, 132, 138, 144, 150, 157, 165,
+              175, 190, 215, HWT
+            </p>
+            <div class="mt-3">
+              <span class="badge bg-primary fs-6"
+                >Season Record: Coming Soon</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h4 class="text-primary">Women's Varsity</h4>
+            <p class="text-muted">
+              Weight Classes: 100, 107, 114, 120, 126, 132, 138, 145, 152, 165,
+              185, HWT
+            </p>
+            <div class="mt-3">
+              <span class="badge bg-primary fs-6"
+                >Season Record: Coming Soon</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Program Values -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="display-6 text-primary mb-3">🏆</div>
+            <h4>Tradition</h4>
+            <p class="text-muted">
+              Building on decades of wrestling excellence at Southern Lee
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="display-6 mb-3" style="color: var(--sl-orange)">⚔️</div>
+            <h4>Warrior Spirit</h4>
+            <p class="text-muted">Cavaliers never back down from a challenge</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="display-6 text-success mb-3">💪</div>
+            <h4>Find A Way</h4>
+            <p class="text-muted">
+              Our motto: when faced with obstacles, Cavaliers find a way
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="display-6 text-warning mb-3">🎯</div>
+            <h4>Excellence</h4>
+            <p class="text-muted">
+              Striving for greatness in competition and character
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Latest Updates -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <h2 class="display-5 fw-bold">Cavaliers News</h2>
+        <p class="lead text-muted">Stay updated with Southern Lee Wrestling</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Season Preview 2025</h5>
+            <p class="card-text">
+              The Cavaliers are preparing for another competitive season. With
+              dedicated training and the "Find A Way" mentality, our wrestlers
+              are ready to make their mark.
+            </p>
+            <small class="text-muted">January 2025</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Weight Room Updates</h5>
+            <p class="card-text">
+              Our wrestlers continue to build strength and conditioning in
+              preparation for the upcoming season. Training hard to compete
+              harder.
+            </p>
+            <small class="text-muted">December 2024</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" style="background-color: var(--sl-navy); color: white">
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="display-6 fw-bold mb-4">
+          Join the Cavalier Wrestling Family
+        </h2>
+        <p class="lead mb-4">
+          Ready to learn what it means to "Find A Way"? Southern Lee Wrestling
+          welcomes dedicated athletes who want to be part of our wrestling
+          tradition.
+        </p>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg"
+          >Get Started</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
