@@ -26,10 +26,10 @@
     <!-- Custom CSS -->
     <style>
       :root {
-        --sl-orange: #ff6b35; /* Southern Lee Orange */
-        --sl-navy: #1a1a2e; /* Southern Lee Navy */
+        --sl-orange: #ff6b35; /* Southern Lee Orange - keeping original */
+        --sl-navy: #2c4875; /* Southern Lee Navy - medium blue between dark and light */
         --sl-light-orange: #ff8c5a;
-        --sl-dark-navy: #16213e;
+        --sl-dark-navy: #1e3a5f;
       }
 
       .navbar-brand {
@@ -98,9 +98,25 @@
   <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container">
+      <div class="container-fluid">
         <a class="navbar-brand cavaliers-logo" href="{{ url_for('home') }}">
-          ⚔️ Southern Lee Wrestling
+          <div
+            style="
+              display: inline-block;
+              background-color: white;
+              border-radius: 50%;
+              padding: 5px;
+              margin-right: 10px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='images/logo1.png') }}"
+              alt="Southern Lee Wrestling Logo"
+              style="height: 30px; width: 30px; display: block"
+            />
+          </div>
+          Southern Lee Wrestling
         </a>
 
         <button

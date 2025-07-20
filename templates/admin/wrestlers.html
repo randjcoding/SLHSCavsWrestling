@@ -133,6 +133,7 @@ content %}
                         type="button"
                         class="btn btn-outline-primary"
                         title="Edit"
+                        onclick="editWrestler({{ wrestler.id }})"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
@@ -168,4 +169,1070 @@ content %}
     </div>
   </div>
 </div>
+
+<!-- Edit Wrestler Modal -->
+<div
+  class="modal fade"
+  id="editWrestlerModal"
+  tabindex="-1"
+  aria-labelledby="editWrestlerModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="editWrestlerModalLabel">
+          <i class="fas fa-edit me-2"></i>Edit Wrestler
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form id="editWrestlerForm" method="POST">
+        <div class="modal-body">
+          <input type="hidden" id="edit_wrestler_id" name="wrestler_id" />
+
+          <!-- Basic Information -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-user me-2"></i>Basic Information
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_first_name" class="form-label"
+                    >First Name *</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_first_name"
+                    name="first_name"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_last_name" class="form-label"
+                    >Last Name *</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_last_name"
+                    name="last_name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="edit_grade" class="form-label">Grade *</label>
+                  <select
+                    class="form-control"
+                    id="edit_grade"
+                    name="grade"
+                    required
+                  >
+                    <option value="9">9th Grade</option>
+                    <option value="10">10th Grade</option>
+                    <option value="11">11th Grade</option>
+                    <option value="12">12th Grade</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="edit_email"
+                    name="email"
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_phone_number" class="form-label"
+                    >Phone Number</label
+                  >
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="edit_phone_number"
+                    name="phone_number"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wrestling Information -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-medal me-2"></i>Wrestling Information
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_division" class="form-label"
+                    >Division *</label
+                  >
+                  <select
+                    class="form-control"
+                    id="edit_division"
+                    name="division"
+                    required
+                  >
+                    <option value="">Select Division</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_level" class="form-label">Level *</label>
+                  <select
+                    class="form-control"
+                    id="edit_level"
+                    name="level"
+                    required
+                  >
+                    <option value="Varsity">Varsity</option>
+                    <option value="JV">JV</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="edit_weight_class_id" class="form-label"
+                    >Weight Class *</label
+                  >
+                  <select
+                    class="form-control"
+                    id="edit_weight_class_id"
+                    name="weight_class_id"
+                    required
+                  >
+                    <option value="">Select Weight Class</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_rank_in_division" class="form-label"
+                    >Rank in Weight Class</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="edit_rank_in_division"
+                    name="rank_in_division"
+                    min="1"
+                    value="1"
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_role" class="form-label">Role</label>
+                  <select class="form-control" id="edit_role" name="role">
+                    <option value="wrestler">Wrestler</option>
+                    <option value="captain">Captain</option>
+                    <option value="co-captain">Co-Captain</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_wins" class="form-label">Wins</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="edit_wins"
+                    name="wins"
+                    min="0"
+                    value="0"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_losses" class="form-label">Losses</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="edit_losses"
+                    name="losses"
+                    min="0"
+                    value="0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Details -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-home me-2"></i>Personal Details
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_home_town" class="form-label"
+                    >Home Town</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_home_town"
+                    name="home_town"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_home_state" class="form-label"
+                    >Home State</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_home_state"
+                    name="home_state"
+                    value="NC"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_address" class="form-label">Address</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_address"
+                    name="address"
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="edit_city" class="form-label">City</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_city"
+                    name="city"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="edit_state" class="form-label">State</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_state"
+                    name="state"
+                    value="NC"
+                  />
+                </div>
+                <div class="col-md-1 mb-3">
+                  <label for="edit_zip_code" class="form-label">Zip</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_zip_code"
+                    name="zip_code"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wrestling Details -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>Wrestling Details
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_track_wrestling_id" class="form-label"
+                    >Track Wrestling ID</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_track_wrestling_id"
+                    name="track_wrestling_id"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_track_wrestling_url" class="form-label"
+                    >Track Wrestling URL</label
+                  >
+                  <input
+                    type="url"
+                    class="form-control"
+                    id="edit_track_wrestling_url"
+                    name="track_wrestling_url"
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="edit_biography" class="form-label">Biography</label>
+                <textarea
+                  class="form-control"
+                  id="edit_biography"
+                  name="biography"
+                  rows="4"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="edit_collegiate_aspirations" class="form-label"
+                  >Collegiate Aspirations</label
+                >
+                <textarea
+                  class="form-control"
+                  id="edit_collegiate_aspirations"
+                  name="collegiate_aspirations"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Weight Classes Wrestled</label>
+                <div id="edit_weight_classes_wrestled_container">
+                  <div class="card border-light mb-2">
+                    <div class="card-body p-3">
+                      <div class="row">
+                        <div class="col-md-6 mb-2">
+                          <select
+                            class="form-control weight-class-division-select"
+                            name="weight_class_division[]"
+                            onchange="updateWeightClassOptions(this)"
+                          >
+                            <option value="">Select Division</option>
+                          </select>
+                        </div>
+                        <div class="col-md-5 mb-2">
+                          <select
+                            class="form-control weight-class-select"
+                            name="weight_class_id[]"
+                            disabled
+                          >
+                            <option value="">Select Weight Class</option>
+                          </select>
+                        </div>
+                        <div class="col-md-1">
+                          <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm w-100"
+                            onclick="removeWeightClassField(this)"
+                          >
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="addWeightClassField()"
+                >
+                  <i class="fas fa-plus me-2"></i>Add Weight Class
+                </button>
+                <div class="form-text">
+                  Track all weight classes this wrestler has competed in across
+                  different divisions
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Achievements</label>
+                <div id="edit_achievements_container">
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="achievements[]"
+                      placeholder="Enter achievement"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      onclick="removeAchievementField(this)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="addAchievementField()"
+                >
+                  <i class="fas fa-plus me-2"></i>Add Achievement
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Settings -->
+          <div class="card">
+            <div
+              class="card-header bg-light d-flex justify-content-between align-items-center"
+            >
+              <h6 class="mb-0">
+                <i class="fas fa-eye me-2"></i>Display Settings
+              </h6>
+              <div class="btn-group btn-group-sm">
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  onclick="selectAllDisplaySettings()"
+                >
+                  <i class="fas fa-check-square me-1"></i>Select All
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  onclick="selectNoneDisplaySettings()"
+                >
+                  <i class="fas fa-square me-1"></i>Select None
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <!-- Basic Information Display -->
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-muted mb-2">Basic Information</h6>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_record"
+                      name="show_record"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_record"
+                      >Show Record (Wins/Losses)</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_email"
+                      name="show_email"
+                      value="true"
+                    />
+                    <label class="form-check-label" for="edit_show_email"
+                      >Show Email</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_grade"
+                      name="show_grade"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_grade"
+                      >Show Grade</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_phone_number"
+                      name="show_phone_number"
+                      value="true"
+                    />
+                    <label class="form-check-label" for="edit_show_phone_number"
+                      >Show Phone Number</label
+                    >
+                  </div>
+                </div>
+
+                <!-- Wrestling Information Display -->
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-muted mb-2">Wrestling Information</h6>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_weight_class"
+                      name="show_weight_class"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_weight_class"
+                      >Show Weight Class</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_division"
+                      name="show_division"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_division"
+                      >Show Division</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_level"
+                      name="show_level"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_level"
+                      >Show Level</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_rank_in_division"
+                      name="show_rank_in_division"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_show_rank_in_division"
+                      >Show Rank in Division</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_weight_classes_wrestled"
+                      name="show_weight_classes_wrestled"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_show_weight_classes_wrestled"
+                      >Show Weight Classes Wrestled</label
+                    >
+                  </div>
+                </div>
+
+                <!-- Personal & Contact Display -->
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-muted mb-2">Personal & Contact</h6>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_home_town"
+                      name="show_home_town"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_home_town"
+                      >Show Home Town</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_home_state"
+                      name="show_home_state"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_home_state"
+                      >Show Home State</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_address"
+                      name="show_address"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_address"
+                      >Show Address</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_city"
+                      name="show_city"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_city"
+                      >Show City</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_state"
+                      name="show_state"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_state"
+                      >Show State</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_zip_code"
+                      name="show_zip_code"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_zip_code"
+                      >Show Zip Code</label
+                    >
+                  </div>
+                </div>
+
+                <!-- Wrestling Details Display -->
+                <div class="col-md-4 mb-3">
+                  <h6 class="text-muted mb-2">Wrestling Details</h6>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_track_wrestling_id"
+                      name="show_track_wrestling_id"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_show_track_wrestling_id"
+                      >Show Track Wrestling ID</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_track_wrestling_url"
+                      name="show_track_wrestling_url"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_show_track_wrestling_url"
+                      >Show Track Wrestling URL</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_biography"
+                      name="show_biography"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_biography"
+                      >Show Biography</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_achievements"
+                      name="show_achievements"
+                      value="true"
+                      checked
+                    />
+                    <label class="form-check-label" for="edit_show_achievements"
+                      >Show Achievements</label
+                    >
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input display-setting"
+                      type="checkbox"
+                      id="edit_show_collegiate_aspirations"
+                      name="show_collegiate_aspirations"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_show_collegiate_aspirations"
+                      >Show Collegiate Aspirations</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-save me-2"></i>Update Wrestler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Global variables for weight classes and divisions
+  let allWeightClasses = [];
+  let allDivisions = [];
+
+  // Load initial data on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    loadWeightClassesAndDivisions();
+  });
+
+  // Load weight classes and divisions for dropdowns
+  async function loadWeightClassesAndDivisions() {
+    try {
+      // Load divisions
+      const divisionResponse = await fetch("/api/divisions");
+      if (divisionResponse.ok) {
+        allDivisions = await divisionResponse.json();
+        populateDivisionsDropdown();
+      }
+
+      // Load weight classes
+      const weightClassResponse = await fetch("/api/weight-classes");
+      if (weightClassResponse.ok) {
+        allWeightClasses = await weightClassResponse.json();
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  }
+
+  // Populate divisions dropdown
+  function populateDivisionsDropdown() {
+    const select = document.getElementById("edit_division");
+    select.innerHTML = '<option value="">Select Division</option>';
+
+    allDivisions.forEach((division) => {
+      const option = document.createElement("option");
+      option.value = division.division;
+      option.textContent = division.division;
+      select.appendChild(option);
+    });
+  }
+
+  // Filter weight classes based on selected division
+  document
+    .getElementById("edit_division")
+    .addEventListener("change", function () {
+      const selectedDivision = this.value;
+      const weightClassSelect = document.getElementById("edit_weight_class_id");
+
+      weightClassSelect.innerHTML =
+        '<option value="">Select Weight Class</option>';
+
+      if (selectedDivision) {
+        const filteredWeightClasses = allWeightClasses.filter(
+          (wc) => wc.division === selectedDivision
+        );
+        filteredWeightClasses.forEach((wc) => {
+          const option = document.createElement("option");
+          option.value = wc.id;
+          option.textContent = `${wc.max_weight}lbs`;
+          weightClassSelect.appendChild(option);
+        });
+      }
+    });
+
+  // Edit wrestler function
+  async function editWrestler(wrestlerId) {
+    try {
+      const response = await fetch(`/admin/edit-wrestler/${wrestlerId}`);
+      if (!response.ok) {
+        throw new Error("Failed to load wrestler data");
+      }
+
+      const wrestler = await response.json();
+
+      // Populate basic information
+      document.getElementById("edit_wrestler_id").value = wrestlerId;
+      document.getElementById("edit_first_name").value =
+        wrestler.first_name || "";
+      document.getElementById("edit_last_name").value =
+        wrestler.last_name || "";
+      document.getElementById("edit_grade").value = wrestler.grade || "";
+      document.getElementById("edit_email").value = wrestler.email || "";
+      document.getElementById("edit_phone_number").value =
+        wrestler.phone_number || "";
+
+      // Wrestling information
+      document.getElementById("edit_division").value = wrestler.division || "";
+      document.getElementById("edit_level").value = wrestler.level || "";
+      document.getElementById("edit_rank_in_division").value =
+        wrestler.rank_in_division || 1;
+      document.getElementById("edit_role").value = wrestler.role || "wrestler";
+      document.getElementById("edit_wins").value = wrestler.wins || 0;
+      document.getElementById("edit_losses").value = wrestler.losses || 0;
+
+      // Trigger division change to populate weight classes
+      document
+        .getElementById("edit_division")
+        .dispatchEvent(new Event("change"));
+
+      // Set weight class after a brief delay to ensure weight classes are loaded
+      setTimeout(() => {
+        document.getElementById("edit_weight_class_id").value =
+          wrestler.weight_class_id || "";
+      }, 100);
+
+      // Personal details
+      document.getElementById("edit_home_town").value =
+        wrestler.home_town || "";
+      document.getElementById("edit_home_state").value =
+        wrestler.home_state || "NC";
+      document.getElementById("edit_address").value = wrestler.address || "";
+      document.getElementById("edit_city").value = wrestler.city || "";
+      document.getElementById("edit_state").value = wrestler.state || "NC";
+      document.getElementById("edit_zip_code").value = wrestler.zip_code || "";
+
+      // Wrestling details
+      document.getElementById("edit_track_wrestling_id").value =
+        wrestler.track_wrestling_id || "";
+      document.getElementById("edit_track_wrestling_url").value =
+        wrestler.track_wrestling_url || "";
+      document.getElementById("edit_biography").value =
+        wrestler.biography || "";
+      document.getElementById("edit_collegiate_aspirations").value =
+        wrestler.collegiate_aspirations || "";
+
+      // Populate weight classes wrestled
+      const weightClassesContainer = document.getElementById(
+        "edit_weight_classes_wrestled_container"
+      );
+      weightClassesContainer.innerHTML = "";
+      const weightClassesWrestled = wrestler.divisions_wrestled || []; // Using divisions_wrestled field to store weight class objects
+      if (weightClassesWrestled.length === 0) {
+        weightClassesWrestled.push({}); // Add empty field if none exist
+      }
+      weightClassesWrestled.forEach((weightClass) => {
+        addWeightClassField(weightClass);
+      });
+
+      // Populate achievements
+      const achievementsContainer = document.getElementById(
+        "edit_achievements_container"
+      );
+      achievementsContainer.innerHTML = "";
+      const achievements = wrestler.achievements || [];
+      if (achievements.length === 0) {
+        achievements.push(""); // Add empty field if none exist
+      }
+      achievements.forEach((achievement) => {
+        addAchievementField(achievement);
+      });
+
+      // Display settings - set all the checkboxes based on wrestler data
+      const modalSettings = wrestler.show_in_modal || {};
+      document.getElementById("edit_show_record").checked =
+        modalSettings.record !== false;
+      document.getElementById("edit_show_biography").checked =
+        modalSettings.biography !== false;
+      document.getElementById("edit_show_achievements").checked =
+        modalSettings.achievements !== false;
+      document.getElementById("edit_show_collegiate_aspirations").checked =
+        modalSettings.collegiate_aspirations !== false;
+
+      // Set other display settings (with proper defaults)
+      document.getElementById("edit_show_email").checked =
+        modalSettings.email === true; // Default to false
+      document.getElementById("edit_show_grade").checked =
+        modalSettings.grade !== false; // Default to true
+      document.getElementById("edit_show_phone_number").checked =
+        modalSettings.phone_number === true; // Default to false
+      document.getElementById("edit_show_weight_class").checked =
+        modalSettings.weight_class !== false;
+      document.getElementById("edit_show_division").checked =
+        modalSettings.division !== false;
+      document.getElementById("edit_show_level").checked =
+        modalSettings.level !== false;
+      document.getElementById("edit_show_rank_in_division").checked =
+        modalSettings.rank_in_division !== false;
+      document.getElementById("edit_show_weight_classes_wrestled").checked =
+        modalSettings.weight_classes_wrestled !== false;
+      document.getElementById("edit_show_home_town").checked =
+        modalSettings.home_town !== false;
+      document.getElementById("edit_show_home_state").checked =
+        modalSettings.home_state !== false;
+      document.getElementById("edit_show_address").checked =
+        modalSettings.address !== false;
+      document.getElementById("edit_show_city").checked =
+        modalSettings.city !== false;
+      document.getElementById("edit_show_state").checked =
+        modalSettings.state !== false;
+      document.getElementById("edit_show_zip_code").checked =
+        modalSettings.zip_code !== false;
+      document.getElementById("edit_show_track_wrestling_id").checked =
+        modalSettings.track_wrestling_id !== false;
+      document.getElementById("edit_show_track_wrestling_url").checked =
+        modalSettings.track_wrestling_url !== false;
+
+      // Update form action
+      document.getElementById(
+        "editWrestlerForm"
+      ).action = `/admin/edit-wrestler/${wrestlerId}`;
+
+      // Show modal
+      const modal = new bootstrap.Modal(
+        document.getElementById("editWrestlerModal")
+      );
+      modal.show();
+    } catch (error) {
+      alert("Error loading wrestler data: " + error.message);
+      console.error("Error:", error);
+    }
+  }
+
+  // Dynamic field management for weight classes
+  function addWeightClassField(weightClass = {}) {
+    const container = document.getElementById(
+      "edit_weight_classes_wrestled_container"
+    );
+    const div = document.createElement("div");
+    div.className = "card border-light mb-2";
+
+    const weightClassId = weightClass.weight_class_id || "";
+    const division = weightClass.division || "";
+
+    div.innerHTML = `
+        <div class="card-body p-3">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <select class="form-control weight-class-division-select" name="weight_class_division[]" onchange="updateWeightClassOptions(this)">
+                        <option value="">Select Division</option>
+                    </select>
+                </div>
+                <div class="col-md-5 mb-2">
+                    <select class="form-control weight-class-select" name="weight_class_id[]" disabled>
+                        <option value="">Select Weight Class</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeWeightClassField(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+
+    // Populate division dropdown
+    const divisionSelect = div.querySelector(".weight-class-division-select");
+    allDivisions.forEach((divisionObj) => {
+      const option = document.createElement("option");
+      option.value = divisionObj.division;
+      option.textContent = divisionObj.division;
+      if (divisionObj.division === division) {
+        option.selected = true;
+      }
+      divisionSelect.appendChild(option);
+    });
+
+    // If division is selected, populate weight classes
+    if (division) {
+      updateWeightClassOptions(divisionSelect);
+      // Set the weight class after a brief delay
+      setTimeout(() => {
+        div.querySelector(".weight-class-select").value = weightClassId;
+      }, 50);
+    }
+  }
+
+  function removeWeightClassField(button) {
+    button.closest(".card").remove();
+  }
+
+  function updateWeightClassOptions(divisionSelect) {
+    const selectedDivision = divisionSelect.value;
+    const weightClassSelect = divisionSelect
+      .closest(".card-body")
+      .querySelector(".weight-class-select");
+
+    weightClassSelect.innerHTML =
+      '<option value="">Select Weight Class</option>';
+
+    if (selectedDivision) {
+      weightClassSelect.disabled = false;
+      const filteredWeightClasses = allWeightClasses.filter(
+        (wc) => wc.division === selectedDivision
+      );
+      filteredWeightClasses.forEach((wc) => {
+        const option = document.createElement("option");
+        option.value = wc.id;
+        option.textContent = `${wc.max_weight}lbs`;
+        weightClassSelect.appendChild(option);
+      });
+    } else {
+      weightClassSelect.disabled = true;
+    }
+  }
+
+  function addAchievementField(value = "") {
+    const container = document.getElementById("edit_achievements_container");
+    const div = document.createElement("div");
+    div.className = "input-group mb-2";
+    div.innerHTML = `
+        <input type="text" class="form-control" name="achievements[]" value="${value}" placeholder="Enter achievement">
+        <button type="button" class="btn btn-outline-danger" onclick="removeAchievementField(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeAchievementField(button) {
+    button.parentElement.remove();
+  }
+
+  // Select all display settings
+  function selectAllDisplaySettings() {
+    const checkboxes = document.querySelectorAll(".display-setting");
+    checkboxes.forEach((cb) => (cb.checked = true));
+  }
+
+  // Select none display settings
+  function selectNoneDisplaySettings() {
+    const checkboxes = document.querySelectorAll(".display-setting");
+    checkboxes.forEach((cb) => (cb.checked = false));
+  }
+</script>
 {% endblock %}

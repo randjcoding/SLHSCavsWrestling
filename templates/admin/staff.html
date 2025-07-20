@@ -116,13 +116,14 @@ content %}
                   </td>
                   <td>
                     <div class="btn-group btn-group-sm" role="group">
-                      <a
-                        href="{{ url_for('admin_edit_staff', staff_id=staff_member.id) }}"
+                      <button
+                        type="button"
                         class="btn btn-outline-primary"
                         title="Edit"
+                        onclick="editStaff({{ staff_member.id }})"
                       >
                         <i class="fas fa-edit"></i>
-                      </a>
+                      </button>
                       <button
                         type="button"
                         class="btn btn-outline-danger"
@@ -155,4 +156,524 @@ content %}
     </div>
   </div>
 </div>
+
+<!-- Edit Staff Modal -->
+<div
+  class="modal fade"
+  id="editStaffModal"
+  tabindex="-1"
+  aria-labelledby="editStaffModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="editStaffModalLabel">
+          <i class="fas fa-edit me-2"></i>Edit Staff Member
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form id="editStaffForm" method="POST">
+        <div class="modal-body">
+          <input type="hidden" id="edit_staff_id" name="staff_id" />
+
+          <!-- Basic Information -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-user me-2"></i>Basic Information
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_staff_first_name" class="form-label"
+                    >First Name *</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_staff_first_name"
+                    name="first_name"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_staff_last_name" class="form-label"
+                    >Last Name *</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_staff_last_name"
+                    name="last_name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="edit_staff_role" class="form-label">Role *</label>
+                  <select
+                    class="form-control"
+                    id="edit_staff_role"
+                    name="role"
+                    required
+                  >
+                    <option value="head_coach">Head Coach</option>
+                    <option value="assistant_coach">Assistant Coach</option>
+                    <option value="manager">Team Manager</option>
+                    <option value="medical">Medical Staff</option>
+                    <option value="athletic_director">Athletic Director</option>
+                    <option value="volunteer">Volunteer</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_staff_email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="edit_staff_email"
+                    name="email"
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="edit_staff_phone_number" class="form-label"
+                    >Phone Number</label
+                  >
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="edit_staff_phone_number"
+                    name="phone_number"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Details -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-briefcase me-2"></i>Professional Details
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="edit_staff_years_coaching" class="form-label"
+                    >Years Coaching</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="edit_staff_years_coaching"
+                    name="years_coaching"
+                    min="0"
+                    value="0"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="edit_staff_education" class="form-label"
+                    >Education</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit_staff_education"
+                    name="education"
+                    placeholder="e.g., BS Exercise Science, UNC"
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="edit_staff_biography" class="form-label"
+                  >Biography</label
+                >
+                <textarea
+                  class="form-control"
+                  id="edit_staff_biography"
+                  name="biography"
+                  rows="4"
+                  placeholder="Professional background and coaching philosophy..."
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="edit_staff_wrestling_history" class="form-label"
+                  >Wrestling History</label
+                >
+                <textarea
+                  class="form-control"
+                  id="edit_staff_wrestling_history"
+                  name="wrestling_history"
+                  rows="3"
+                  placeholder="Wrestling experience and accomplishments..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills and Certifications -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-certificate me-2"></i>Skills and Certifications
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Certifications</label>
+                <div id="edit_staff_certifications_container">
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="certifications[]"
+                      placeholder="Enter certification (e.g., CPR Certified, Wrestling Referee)"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      onclick="removeStaffCertificationField(this)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="addStaffCertificationField()"
+                >
+                  <i class="fas fa-plus me-2"></i>Add Certification
+                </button>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Specialties</label>
+                <div id="edit_staff_specialties_container">
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="specialties[]"
+                      placeholder="Enter specialty (e.g., Strength Training, Mental Conditioning)"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      onclick="removeStaffSpecialtyField(this)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="addStaffSpecialtyField()"
+                >
+                  <i class="fas fa-plus me-2"></i>Add Specialty
+                </button>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Achievements</label>
+                <div id="edit_staff_achievements_container">
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="achievements[]"
+                      placeholder="Enter achievement (e.g., Coach of the Year 2023)"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      onclick="removeStaffAchievementField(this)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="addStaffAchievementField()"
+                >
+                  <i class="fas fa-plus me-2"></i>Add Achievement
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Settings -->
+          <div class="card">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">
+                <i class="fas fa-eye me-2"></i>Display Settings
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="edit_staff_show_biography"
+                      name="show_biography"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_staff_show_biography"
+                      >Show Biography</label
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="edit_staff_show_achievements"
+                      name="show_achievements"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_staff_show_achievements"
+                      >Show Achievements</label
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="edit_staff_show_years_coaching"
+                      name="show_years_coaching"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_staff_show_years_coaching"
+                      >Show Years Coaching</label
+                    >
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="edit_staff_show_wrestling_history"
+                      name="show_wrestling_history"
+                      value="true"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="edit_staff_show_wrestling_history"
+                      >Show Wrestling History</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-info">
+            <i class="fas fa-save me-2"></i>Update Staff Member
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Edit staff function
+  async function editStaff(staffId) {
+    try {
+      const response = await fetch(`/admin/edit-staff/${staffId}`);
+      if (!response.ok) {
+        throw new Error("Failed to load staff data");
+      }
+
+      const staff = await response.json();
+
+      // Populate basic information
+      document.getElementById("edit_staff_id").value = staffId;
+      document.getElementById("edit_staff_first_name").value =
+        staff.first_name || "";
+      document.getElementById("edit_staff_last_name").value =
+        staff.last_name || "";
+      document.getElementById("edit_staff_role").value = staff.role || "";
+      document.getElementById("edit_staff_email").value = staff.email || "";
+      document.getElementById("edit_staff_phone_number").value =
+        staff.phone_number || "";
+
+      // Professional details
+      document.getElementById("edit_staff_years_coaching").value =
+        staff.years_coaching || 0;
+      document.getElementById("edit_staff_education").value =
+        staff.education || "";
+      document.getElementById("edit_staff_biography").value =
+        staff.biography || "";
+      document.getElementById("edit_staff_wrestling_history").value =
+        staff.wrestling_history || "";
+
+      // Populate certifications
+      const certificationsContainer = document.getElementById(
+        "edit_staff_certifications_container"
+      );
+      certificationsContainer.innerHTML = "";
+      const certifications = staff.certifications || [];
+      if (certifications.length === 0) {
+        certifications.push(""); // Add empty field if none exist
+      }
+      certifications.forEach((certification) => {
+        addStaffCertificationField(certification);
+      });
+
+      // Populate specialties
+      const specialtiesContainer = document.getElementById(
+        "edit_staff_specialties_container"
+      );
+      specialtiesContainer.innerHTML = "";
+      const specialties = staff.specialties || [];
+      if (specialties.length === 0) {
+        specialties.push(""); // Add empty field if none exist
+      }
+      specialties.forEach((specialty) => {
+        addStaffSpecialtyField(specialty);
+      });
+
+      // Populate achievements
+      const achievementsContainer = document.getElementById(
+        "edit_staff_achievements_container"
+      );
+      achievementsContainer.innerHTML = "";
+      const achievements = staff.achievements || [];
+      if (achievements.length === 0) {
+        achievements.push(""); // Add empty field if none exist
+      }
+      achievements.forEach((achievement) => {
+        addStaffAchievementField(achievement);
+      });
+
+      // Display settings
+      document.getElementById("edit_staff_show_biography").checked =
+        staff.show_biography !== false;
+      document.getElementById("edit_staff_show_achievements").checked =
+        staff.show_achievements !== false;
+      document.getElementById("edit_staff_show_years_coaching").checked =
+        staff.show_years_coaching !== false;
+      document.getElementById("edit_staff_show_wrestling_history").checked =
+        staff.show_wrestling_history !== false;
+
+      // Update form action
+      document.getElementById(
+        "editStaffForm"
+      ).action = `/admin/edit-staff/${staffId}`;
+
+      // Show modal
+      const modal = new bootstrap.Modal(
+        document.getElementById("editStaffModal")
+      );
+      modal.show();
+    } catch (error) {
+      alert("Error loading staff data: " + error.message);
+      console.error("Error:", error);
+    }
+  }
+
+  // Dynamic field management for staff
+  function addStaffCertificationField(value = "") {
+    const container = document.getElementById(
+      "edit_staff_certifications_container"
+    );
+    const div = document.createElement("div");
+    div.className = "input-group mb-2";
+    div.innerHTML = `
+        <input type="text" class="form-control" name="certifications[]" value="${value}" placeholder="Enter certification (e.g., CPR Certified, Wrestling Referee)">
+        <button type="button" class="btn btn-outline-danger" onclick="removeStaffCertificationField(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeStaffCertificationField(button) {
+    button.parentElement.remove();
+  }
+
+  function addStaffSpecialtyField(value = "") {
+    const container = document.getElementById(
+      "edit_staff_specialties_container"
+    );
+    const div = document.createElement("div");
+    div.className = "input-group mb-2";
+    div.innerHTML = `
+        <input type="text" class="form-control" name="specialties[]" value="${value}" placeholder="Enter specialty (e.g., Strength Training, Mental Conditioning)">
+        <button type="button" class="btn btn-outline-danger" onclick="removeStaffSpecialtyField(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeStaffSpecialtyField(button) {
+    button.parentElement.remove();
+  }
+
+  function addStaffAchievementField(value = "") {
+    const container = document.getElementById(
+      "edit_staff_achievements_container"
+    );
+    const div = document.createElement("div");
+    div.className = "input-group mb-2";
+    div.innerHTML = `
+        <input type="text" class="form-control" name="achievements[]" value="${value}" placeholder="Enter achievement (e.g., Coach of the Year 2023)">
+        <button type="button" class="btn btn-outline-danger" onclick="removeStaffAchievementField(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
+  }
+
+  function removeStaffAchievementField(button) {
+    button.parentElement.remove();
+  }
+
+  // Delete staff function (placeholder)
+  function deleteStaff(staffId) {
+    if (
+      confirm(
+        "Are you sure you want to delete this staff member? This action cannot be undone."
+      )
+    ) {
+      // Implement delete functionality here
+      alert("Delete functionality not yet implemented");
+    }
+  }
+</script>
 {% endblock %}

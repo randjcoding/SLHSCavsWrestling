@@ -377,11 +377,22 @@ content %}
               {% endif %}
               <div class="row mb-3">
                 <div class="col-6">
+                  {% if wrestler.show_weight_class and
+                  wrestler.weight_class_name %}
                   <strong>Weight Class:</strong> {{ wrestler.weight_class_name
                   }}<br />
+                  {% endif %} {% if wrestler.show_grade %}
                   <strong>Grade:</strong> {{ wrestler.grade }}th<br />
+                  {% endif %} {% if wrestler.show_division %}
                   <strong>Division:</strong> {{ wrestler.division }}<br />
-                  <strong>Level:</strong> {{ wrestler.level }}
+                  {% endif %} {% if wrestler.show_level %}
+                  <strong>Level:</strong> {{ wrestler.level }}<br />
+                  {% endif %} {% if wrestler.show_email and wrestler.email %}
+                  <strong>Email:</strong> {{ wrestler.email }}<br />
+                  {% endif %} {% if wrestler.show_phone_number and
+                  wrestler.phone_number %}
+                  <strong>Phone:</strong> {{ wrestler.phone_number }}<br />
+                  {% endif %}
                 </div>
                 <div class="col-6">
                   {% if wrestler.show_record %}
@@ -390,10 +401,21 @@ content %}
                   {% if wrestler.wins + wrestler.losses > 0 %}
                   <strong>Win Rate:</strong> {{ "%.1f"|format((wrestler.wins /
                   (wrestler.wins + wrestler.losses)) * 100) }}%<br />
-                  {% endif %} {% endif %} {% if wrestler.home_town and
+                  {% endif %} {% endif %} {% if wrestler.show_home_town and
+                  wrestler.home_town and wrestler.show_home_state and
                   wrestler.home_state %}
                   <strong>Hometown:</strong> {{ wrestler.home_town }}, {{
-                  wrestler.home_state }} {% endif %}
+                  wrestler.home_state }}<br />
+                  {% elif wrestler.show_home_town and wrestler.home_town %}
+                  <strong>Hometown:</strong> {{ wrestler.home_town }}<br />
+                  {% endif %} {% if wrestler.show_address and wrestler.address
+                  %}
+                  <strong>Address:</strong> {{ wrestler.address }} {% if
+                  wrestler.show_city and wrestler.city %}, {{ wrestler.city }}{%
+                  endif %} {% if wrestler.show_state and wrestler.state %}, {{
+                  wrestler.state }}{% endif %} {% if wrestler.show_zip_code and
+                  wrestler.zip_code %} {{ wrestler.zip_code }}{% endif %}<br />
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -422,7 +444,8 @@ content %}
             <h6 style="color: #ff6b35">Collegiate Aspirations</h6>
             <p>{{ wrestler.collegiate_aspirations }}</p>
           </div>
-          {% endif %} {% if wrestler.track_wrestling_url %}
+          {% endif %} {% if wrestler.show_track_wrestling_url and
+          wrestler.track_wrestling_url %}
           <div class="text-center">
             <a
               href="{{ wrestler.track_wrestling_url }}"
