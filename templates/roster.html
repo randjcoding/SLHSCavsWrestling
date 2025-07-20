@@ -421,7 +421,33 @@ content %}
             </div>
           </div>
 
-          {% if wrestler.show_biography and wrestler.biography %}
+          {% if wrestler.show_weight_classes_wrestled and
+          wrestler.divisions_wrestled and wrestler.divisions_wrestled|length > 0
+          %}
+          <div class="mb-3">
+            <h6 style="color: #ff6b35">Weight Classes Wrestled</h6>
+            <div class="row">
+              {% for weight_class in wrestler.divisions_wrestled %}
+              <div class="col-md-6 mb-2">
+                <div class="card card-body border-light py-2">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <span class="fw-bold">{{ weight_class.division }}</span>
+                    <span class="badge bg-warning text-dark">
+                      {% if weight_class.max_weight %} {{
+                      weight_class.max_weight }}lbs {% elif
+                      weight_class.weight_class_name %} {{
+                      weight_class.weight_class_name }} {% else %} Weight Class
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %} {% if wrestler.show_biography and wrestler.biography %}
           <div class="mb-3">
             <h6 style="color: #ff6b35">Biography</h6>
             <p>{{ wrestler.biography }}</p>

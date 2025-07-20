@@ -145,6 +145,10 @@ def roster(year_id=None):
             
             staff.append(staff_dict)
         
+        # Get all weight classes for lookups
+        cursor.execute("SELECT id, name, max_weight, division, level FROM weightClasses")
+        all_weight_classes = {wc['id']: dict(wc) for wc in cursor.fetchall()}
+        
         # Get wrestlers for the selected year
         cursor.execute("""
             SELECT w.id, w.first_name, w.last_name, w.division, w.level, w.rank_in_division,
@@ -152,7 +156,7 @@ def roster(year_id=None):
                    wc.name as weight_class_name, wc.max_weight,
                    wd.biography, wd.achievements, wd.collegiate_aspirations, wd.role,
                    wd.primary_photo_url, wd.secondary_photo_url, wd.show_in_modal,
-                   wd.home_town, wd.home_state, wd.track_wrestling_url
+                   wd.home_town, wd.home_state, wd.track_wrestling_url, wd.divisions_wrestled
             FROM wrestlers w
             LEFT JOIN weightClasses wc ON w.weight_class_id = wc.id
             LEFT JOIN wrestlerDetails wd ON w.id = wd.wrestler_id
@@ -170,6 +174,37 @@ def roster(year_id=None):
                 wrestler_dict['achievements'] = wrestler_dict['achievements'] if isinstance(wrestler_dict['achievements'], list) else []
             else:
                 wrestler_dict['achievements'] = []
+            
+            # Parse divisions_wrestled JSON field and enrich with weight class data
+            if wrestler_dict.get('divisions_wrestled'):
+                wrestler_dict['divisions_wrestled'] = wrestler_dict['divisions_wrestled'] if isinstance(wrestler_dict['divisions_wrestled'], list) else []
+                
+                # Enrich each weight class entry with actual weight data
+                enriched_divisions = []
+                for weight_class_entry in wrestler_dict['divisions_wrestled']:
+                    if isinstance(weight_class_entry, dict) and weight_class_entry.get('weight_class_id'):
+                        weight_class_id = int(weight_class_entry['weight_class_id'])
+                        weight_class_data = all_weight_classes.get(weight_class_id)
+                        
+                        if weight_class_data:
+                            enriched_entry = dict(weight_class_entry)
+                            enriched_entry['weight_class_name'] = weight_class_data['name']
+                            enriched_entry['max_weight'] = weight_class_data['max_weight']
+                            enriched_entry['weight_class_level'] = weight_class_data['level']
+                            # Use the division from the weight class data if not set
+                            if not enriched_entry.get('division'):
+                                enriched_entry['division'] = weight_class_data['division']
+                            enriched_divisions.append(enriched_entry)
+                        else:
+                            # Keep original entry if weight class not found
+                            enriched_divisions.append(weight_class_entry)
+                    else:
+                        # Keep entries that don't have weight_class_id
+                        enriched_divisions.append(weight_class_entry)
+                
+                wrestler_dict['divisions_wrestled'] = enriched_divisions
+            else:
+                wrestler_dict['divisions_wrestled'] = []
             
             # Parse modal settings - handle all display preferences  
             modal_settings = wrestler_dict.get('show_in_modal', {})
