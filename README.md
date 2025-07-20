@@ -1,2 +1,0 @@
-# SLHSCavsWrestling
-SLHSCavsWrestling
