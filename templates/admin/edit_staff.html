@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_roster') }}">Roster</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_staff') }}">Staff</a></li>
+                    <li class="breadcrumb-item active">Edit Staff</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-edit text-info me-2"></i>Edit Staff Member
+            </h1>
+            <p class="text-muted">Update staff member information</p>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Staff Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ staff_member.first_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ staff_member.last_name }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="role" class="form-label">Role *</label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="head_coach" {% if staff_member.role == 'head_coach' %}selected{% endif %}>Head Coach</option>
+                                    <option value="assistant_coach" {% if staff_member.role == 'assistant_coach' %}selected{% endif %}>Assistant Coach</option>
+                                    <option value="manager" {% if staff_member.role == 'manager' %}selected{% endif %}>Team Manager</option>
+                                    <option value="medical" {% if staff_member.role == 'medical' %}selected{% endif %}>Medical Staff</option>
+                                    <option value="athletic_director" {% if staff_member.role == 'athletic_director' %}selected{% endif %}>Athletic Director</option>
+                                    <option value="webmaster" {% if staff_member.role == 'webmaster' %}selected{% endif %}>Webmaster</option>
+                                    <option value="volunteer" {% if staff_member.role == 'volunteer' %}selected{% endif %}>Volunteer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email (Optional)</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ staff_member.email or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone_number" class="form-label">Phone Number (Optional)</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" 
+                                       value="{{ staff_member.phone_number or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_staff') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save me-2"></i>Update Staff Member
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Current Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Current Name:</strong><br>{{ staff_member.first_name }} {{ staff_member.last_name }}</p>
+                    <p><strong>Current Role:</strong><br>
+                        {% if staff_member.role == 'head_coach' %}Head Coach
+                        {% elif staff_member.role == 'assistant_coach' %}Assistant Coach
+                        {% elif staff_member.role == 'manager' %}Team Manager
+                        {% elif staff_member.role == 'medical' %}Medical Staff
+                        {% elif staff_member.role == 'athletic_director' %}Athletic Director
+                        {% elif staff_member.role == 'webmaster' %}Webmaster
+                        {% elif staff_member.role == 'volunteer' %}Volunteer
+                        {% else %}{{ staff_member.role|title }}
+                        {% endif %}
+                    </p>
+                    {% if staff_member.email %}
+                    <p><strong>Current Email:</strong><br>{{ staff_member.email }}</p>
+                    {% endif %}
+                    {% if staff_member.phone_number %}
+                    <p><strong>Current Phone:</strong><br>{{ staff_member.phone_number }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

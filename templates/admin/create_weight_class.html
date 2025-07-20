@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_weight_classes') }}">Weight Classes</a></li>
+                    <li class="breadcrumb-item active">Create Weight Class</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-plus-circle text-success me-2"></i>Create New Weight Class
+            </h1>
+            <p class="text-muted">Add a new weight class to a division for tournaments</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-weight me-2"></i>Weight Class Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin_create_weight_class') }}">
+                        <div class="row">
+                                                         <div class="col-md-6 mb-3">
+                                 <label for="max_weight" class="form-label">Weight Limit (lbs) *</label>
+                                 <input
+                                     type="number"
+                                     class="form-control"
+                                     id="max_weight"
+                                     name="max_weight"
+                                     min="50"
+                                     max="500"
+                                     required
+                                     placeholder="e.g., 106, 113, 120"
+                                 >
+                                 <div class="form-text">Maximum weight allowed for this class</div>
+                             </div>
+                             
+                             <div class="col-md-6 mb-3">
+                                 <label for="name" class="form-label">Name (Optional)</label>
+                                 <input
+                                     type="text"
+                                     class="form-control"
+                                     id="name"
+                                     name="name"
+                                     placeholder="Auto-generated if left blank"
+                                 >
+                                 <div class="form-text">Will auto-generate as "106 lbs NC High School Boys" if left blank</div>
+                             </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="level" class="form-label">Level *</label>
+                                <select class="form-control" id="level" name="level" required>
+                                    <option value="">Select Level</option>
+                                    <option value="Varsity">Varsity</option>
+                                    <option value="JV">JV</option>
+                                </select>
+                                <div class="form-text">Competition level for this weight class</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Division *</label>
+                            <div class="row">
+                                <div class="col-md-8 mb-2">
+                                    <select class="form-control" id="division" name="division">
+                                        <option value="">Select Existing Division</option>
+                                        {% for division in existing_divisions %}
+                                        <option value="{{ division.division }}" 
+                                            {% if division.division == 'NC High School Boys' %}selected{% endif %}>
+                                            {{ division.division }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" class="btn btn-outline-info" onclick="toggleCustomDivision()">
+                                        <i class="fas fa-plus me-1"></i>New Division
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-text">Choose an existing division or create a new one</div>
+                        </div>
+
+                        <div class="mb-3" id="customDivisionGroup" style="display: none;">
+                            <label for="custom_division" class="form-label">Create New Division</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="custom_division"
+                                name="custom_division"
+                                placeholder="e.g., NC Middle School Boys, Club Wrestling, etc."
+                            >
+                            <div class="form-text">
+                                <strong>Examples:</strong> "NC High School Boys", "NC Middle School Girls", "Club Wrestling Mixed", "Tournament Open"
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-info-circle text-info me-2"></i>Quick Tips
+                                </h6>
+                                <ul class="mb-0 small">
+                                    <li><strong>NC High School Boys/Girls:</strong> Standard high school wrestling</li>
+                                    <li><strong>NC Middle School Boys/Girls:</strong> For younger wrestlers</li>
+                                    <li><strong>Club Wrestling:</strong> For club tournaments</li>
+                                    <li><strong>Tournament Open:</strong> For open weight tournaments</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_weight_classes') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Create Weight Class
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleCustomDivision() {
+    const customGroup = document.getElementById('customDivisionGroup');
+    const existingSelect = document.getElementById('division');
+    const customInput = document.getElementById('custom_division');
+    const button = event.target.closest('button');
+    
+    if (customGroup.style.display === 'none') {
+        // Show custom division input
+        customGroup.style.display = 'block';
+        existingSelect.value = '';
+        existingSelect.disabled = true;
+        customInput.required = true;
+        customInput.focus();
+        button.innerHTML = '<i class="fas fa-times me-1"></i>Cancel';
+        button.className = 'btn btn-outline-secondary';
+    } else {
+        // Hide custom division input
+        customGroup.style.display = 'none';
+        existingSelect.disabled = false;
+        customInput.required = false;
+        customInput.value = '';
+        button.innerHTML = '<i class="fas fa-plus me-1"></i>New Division';
+        button.className = 'btn btn-outline-info';
+        
+        // Set default to NC High School Boys
+        const options = existingSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value.includes('NC High School Boys')) {
+                existingSelect.value = options[i].value;
+                break;
+            }
+        }
+    }
+}
+
+// Set default division on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const existingSelect = document.getElementById('division');
+    if (existingSelect.value === '') {
+        const options = existingSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value.includes('NC High School Boys')) {
+                existingSelect.value = options[i].value;
+                break;
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

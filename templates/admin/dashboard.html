@@ -51,8 +51,15 @@
       <div class="card border-0 shadow-sm h-100">
         <div class="card-body text-center">
           <div class="display-6 text-success mb-2">👥</div>
-          <h5 class="card-title">Team Management</h5>
-          <p class="card-text text-muted">Coming soon</p>
+          <h5 class="card-title">Roster Management</h5>
+          <p class="card-text text-muted">
+            <a
+              href="{{ url_for('admin_roster') }}"
+              class="btn btn-sm btn-outline-success"
+            >
+              <i class="fas fa-users me-1"></i>Manage Team
+            </a>
+          </p>
         </div>
       </div>
     </div>
@@ -122,8 +129,47 @@
             </div>
 
             <div class="col-md-6 mb-3">
-              <a href="#" class="btn btn-outline-secondary w-100 disabled">
-                <i class="fas fa-trophy me-2"></i>Team Roster
+              <a
+                href="{{ url_for('admin_roster') }}"
+                class="btn btn-outline-primary w-100"
+              >
+                <i class="fas fa-users me-2"></i>Roster Dashboard
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_wrestlers') }}"
+                class="btn btn-outline-warning w-100"
+              >
+                <i class="fas fa-medal me-2"></i>Manage Wrestlers
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_weight_classes') }}"
+                class="btn btn-outline-info w-100"
+              >
+                <i class="fas fa-weight me-2"></i>Manage Weight Classes
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_staff') }}"
+                class="btn btn-outline-info w-100"
+              >
+                <i class="fas fa-user-tie me-2"></i>Manage Staff
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_create_wrestler') }}"
+                class="btn btn-outline-success w-100"
+              >
+                <i class="fas fa-plus me-2"></i>Add Wrestler
               </a>
             </div>
           </div>

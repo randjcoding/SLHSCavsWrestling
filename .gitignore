@@ -1,3 +1,6 @@
+# Archive folder - don't push development files
+archive/
+
 # Server documentation (contains sensitive information)
 serverCreation.md
 

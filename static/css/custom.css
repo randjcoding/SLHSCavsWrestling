@@ -1,0 +1,157 @@
+/* ===========================================
+   SOUTHERN LEE WRESTLING - CUSTOM STYLES
+   =========================================== */
+
+/* Southern Lee Colors */
+:root {
+  --sl-primary: #1e3a8a; /* Navy Blue */
+  --sl-secondary: #dc2626; /* Red */
+  --sl-accent: #f59e0b; /* Gold/Yellow */
+  --sl-dark: #1f2937; /* Dark Gray */
+  --sl-light: #f8fafc; /* Light Gray */
+}
+
+/* Custom Navbar Styling */
+.navbar-brand {
+  font-weight: bold;
+  color: var(--sl-secondary) !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: var(--sl-accent) !important;
+}
+
+/* Wrestling-specific styling */
+.wrestler-card {
+  transition: transform 0.2s ease-in-out;
+  border-left: 4px solid var(--sl-primary);
+}
+
+.wrestler-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.weight-class-badge {
+  background: linear-gradient(45deg, var(--sl-primary), var(--sl-secondary));
+  color: white;
+  font-weight: bold;
+}
+
+.division-boys {
+  background-color: var(--sl-primary);
+  color: white;
+}
+
+.division-girls {
+  background-color: var(--sl-secondary);
+  color: white;
+}
+
+/* Admin Dashboard Styling */
+.admin-card {
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Buttons */
+.btn-sl-primary {
+  background-color: var(--sl-primary);
+  border-color: var(--sl-primary);
+  color: white;
+}
+
+.btn-sl-primary:hover {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
+
+.btn-sl-secondary {
+  background-color: var(--sl-secondary);
+  border-color: var(--sl-secondary);
+  color: white;
+}
+
+.btn-sl-secondary:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Wrestling Mat Background Pattern */
+.wrestling-bg {
+  background: linear-gradient(45deg, var(--sl-light) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--sl-light) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--sl-light) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--sl-light) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* Success/Error Message Styling */
+.alert-success {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.alert-danger {
+  background-color: var(--sl-secondary);
+  border-color: var(--sl-secondary);
+  color: white;
+}
+
+/* Table Styling */
+.table-hover tbody tr:hover {
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wrestler-card {
+    margin-bottom: 1rem;
+  }
+
+  .admin-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Loading spinner */
+.spinner-sl {
+  border: 3px solid var(--sl-light);
+  border-top: 3px solid var(--sl-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom form styling */
+.form-control:focus {
+  border-color: var(--sl-primary);
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
+}
+
+.form-select:focus {
+  border-color: var(--sl-primary);
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
+}

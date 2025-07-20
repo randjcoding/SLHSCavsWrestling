@@ -1,0 +1,615 @@
+{% extends "base.html" %} {% block title %}{{ title }}{% endblock %} {% block
+content %}
+<div class="container-fluid py-4">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="text-center bg-light py-4 rounded">
+        <h1 class="display-4 fw-bold" style="color: #1a1a2e">
+          {{ current_year }} Wrestling Roster
+        </h1>
+        <p class="lead text-muted">Southern Lee High School Cavaliers</p>
+        <div class="d-flex justify-content-center align-items-center">
+          <span class="badge bg-warning text-dark fs-6 me-3"
+            >⚔️ Find A Way!</span
+          >
+          {% if years and years|length > 1 %}
+          <div class="dropdown">
+            <button
+              class="btn btn-outline-secondary dropdown-toggle btn-sm"
+              type="button"
+              data-bs-toggle="dropdown"
+            >
+              {{ current_year }}
+            </button>
+            <ul class="dropdown-menu">
+              {% for year in years %}
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="{{ url_for('roster', year_id=year.id) }}"
+                  >{{ year.school_year }}</a
+                >
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roster Controls -->
+  {% if wrestlers %}
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="btn-group" role="group" aria-label="Filter wrestlers">
+        <button
+          type="button"
+          class="btn btn-outline-primary active"
+          onclick="filterRoster('all')"
+        >
+          All
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="filterRoster('North Carolina Boys-Varsity')"
+        >
+          Boys Varsity
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="filterRoster('North Carolina Boys-JV')"
+        >
+          Boys JV
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="filterRoster('North Carolina Girls-Varsity')"
+        >
+          Girls Varsity
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="filterRoster('North Carolina Girls-JV')"
+        >
+          Girls JV
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <div class="dropdown">
+        <button
+          class="btn btn-outline-secondary dropdown-toggle btn-sm"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          Sort By: Name
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="#" onclick="sortRoster('name')"
+              >Name</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" onclick="sortRoster('weight')"
+              >Weight Class</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" onclick="sortRoster('grade')"
+              >Grade</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wrestling Roster -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div
+          class="card-header"
+          style="background-color: #1a1a2e; color: white"
+        >
+          <h3 class="mb-0">
+            <i class="fas fa-medal me-2"></i>Wrestling Roster
+          </h3>
+        </div>
+        <div class="card-body p-0">
+          {% for wrestler in wrestlers %}
+          <div
+            class="wrestler-item border-bottom py-3 px-4 wrestler-card"
+            data-division="{{ wrestler.division }}"
+            data-level="{{ wrestler.level }}"
+            data-filter="{{ wrestler.division }}-{{ wrestler.level }}"
+            data-weight="{{ wrestler.weight_class_name }}"
+            data-grade="{{ wrestler.grade }}"
+            data-name="{{ wrestler.first_name }} {{ wrestler.last_name }}"
+          >
+            <div class="row align-items-center">
+              <!-- Photo -->
+              <div class="col-lg-1 col-md-2 col-3 text-center">
+                {% if wrestler.primary_photo_url %}
+                <img
+                  src="{{ wrestler.primary_photo_url }}"
+                  class="rounded-circle img-fluid wrestler-photo"
+                  alt="{{ wrestler.first_name }} {{ wrestler.last_name }}"
+                  style="width: 60px; height: 60px; object-fit: cover"
+                />
+                {% else %}
+                <div
+                  class="rounded-circle bg-light d-flex align-items-center justify-content-center wrestler-photo"
+                  style="width: 60px; height: 60px"
+                >
+                  <i class="fas fa-user text-muted"></i>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Name & Weight -->
+              <div class="col-lg-3 col-md-4 col-9">
+                <h5 class="mb-1 fw-bold" style="color: #1a1a2e">
+                  {{ wrestler.first_name }} {{ wrestler.last_name }} {% if
+                  wrestler.role == 'captain' or wrestler.role == 'co-captain' %}
+                  <span class="badge bg-warning text-dark ms-1">
+                    <i class="fas fa-star"></i> {{ wrestler.role|title }}
+                  </span>
+                  {% endif %}
+                </h5>
+                <div class="small text-muted">
+                  <span
+                    class="badge badge-weight me-1"
+                    style="background-color: #ff6b35; color: white"
+                  >
+                    {{ wrestler.weight_class_name }}
+                  </span>
+                  {% if wrestler.rank_in_division > 1 %}
+                  <span class="badge bg-light text-dark"
+                    >#{{ wrestler.rank_in_division }}</span
+                  >
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Class & Division -->
+              <div class="col-lg-2 col-md-3 col-6">
+                <div class="small">
+                  <div><strong>{{ wrestler.grade }}th Grade</strong></div>
+                  <div class="text-muted">
+                    <span
+                      class="badge {% if 'Boys' in wrestler.division %}bg-primary{% else %}bg-danger{% endif %} me-1"
+                    >
+                      {% if 'Boys' in wrestler.division %}Boys{% else %}Girls{%
+                      endif %}
+                    </span>
+                    <span
+                      class="badge {% if wrestler.level == 'Varsity' %}bg-success{% else %}bg-secondary{% endif %}"
+                    >
+                      {{ wrestler.level }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hometown -->
+              <div class="col-lg-3 col-md-3 col-6">
+                <div class="small">
+                  {% if wrestler.home_town and wrestler.home_state %}
+                  <div>
+                    <strong
+                      >{{ wrestler.home_town }}, {{ wrestler.home_state
+                      }}</strong
+                    >
+                  </div>
+                  {% else %}
+                  <div class="text-muted">Hometown not listed</div>
+                  {% endif %}
+                  <div class="text-muted">
+                    Record: {{ wrestler.wins or 0 }}-{{ wrestler.losses or 0 }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Full Bio Link -->
+              <div
+                class="col-lg-3 col-md-12 col-12 text-lg-end text-md-start text-start mt-2 mt-lg-0"
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#wrestlerModal{{ wrestler.id }}"
+                >
+                  <i class="fas fa-info-circle me-1"></i>Full Bio
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <!-- No Wrestlers Message -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card text-center py-5">
+        <div class="card-body">
+          <i class="fas fa-users fa-4x text-muted mb-3"></i>
+          <h3>Roster Coming Soon!</h3>
+          <p class="text-muted">
+            The {{ current_year }} wrestling roster will be posted here once
+            it's finalized.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Coaching Staff Section -->
+  {% if staff %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div
+          class="card-header"
+          style="background-color: #ff6b35; color: white"
+        >
+          <h3 class="mb-0">
+            <i class="fas fa-users me-2"></i>Wrestling Coaching Staff
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            {% for coach in staff %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+              <div class="d-flex align-items-center">
+                <!-- Coach Photo -->
+                <div class="me-3">
+                  {% if coach.primary_photo_url %}
+                  <img
+                    src="{{ coach.primary_photo_url }}"
+                    class="rounded img-fluid"
+                    alt="{{ coach.first_name }} {{ coach.last_name }}"
+                    style="width: 80px; height: 80px; object-fit: cover"
+                  />
+                  {% else %}
+                  <div
+                    class="rounded bg-light d-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px"
+                  >
+                    <i class="fas fa-user-tie fa-2x text-muted"></i>
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- Coach Info -->
+                <div class="flex-grow-1">
+                  <h5 class="mb-1 fw-bold" style="color: #1a1a2e">
+                    {{ coach.first_name }} {{ coach.last_name }}
+                  </h5>
+                  <div class="text-muted small mb-2">
+                    {% if coach.role == 'head_coach' %}Head Wrestling Coach {%
+                    elif coach.role == 'assistant_coach' %}Associate Head
+                    Coach/Recruiting Coordinator {% elif coach.role == 'manager'
+                    %}Team Manager {% elif coach.role == 'medical' %}Medical
+                    Staff {% elif coach.role == 'athletic_director' %}Athletic
+                    Director {% else %}{{ coach.role|title }} {% endif %}
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staffModal{{ coach.id }}"
+                  >
+                    <i class="fas fa-info-circle me-1"></i>Full Bio
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Wrestler Modals -->
+{% for wrestler in wrestlers %}
+<div
+  class="modal fade"
+  id="wrestlerModal{{ wrestler.id }}"
+  tabindex="-1"
+  aria-labelledby="wrestlerModalLabel{{ wrestler.id }}"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #ff6b35; color: white">
+        <h5 class="modal-title" id="wrestlerModalLabel{{ wrestler.id }}">
+          <i class="fas fa-medal me-2"></i>{{ wrestler.first_name }} {{
+          wrestler.last_name }} {% if wrestler.role == 'captain' or
+          wrestler.role == 'co-captain' %}
+          <span class="badge bg-light text-dark ms-2">
+            <i class="fas fa-star"></i> {{ wrestler.role|title }}
+          </span>
+          {% endif %}
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          {% if wrestler.primary_photo_url %}
+          <div class="col-md-4 text-center mb-3">
+            <img
+              src="{{ wrestler.primary_photo_url }}"
+              class="img-fluid rounded mb-2"
+              alt="{{ wrestler.first_name }} {{ wrestler.last_name }}"
+            />
+            {% if wrestler.secondary_photo_url %}
+            <img
+              src="{{ wrestler.secondary_photo_url }}"
+              class="img-fluid rounded"
+              alt="{{ wrestler.first_name }} {{ wrestler.last_name }}"
+            />
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            {% else %}
+            <div class="col-12">
+              {% endif %}
+              <div class="row mb-3">
+                <div class="col-6">
+                  <strong>Weight Class:</strong> {{ wrestler.weight_class_name
+                  }}<br />
+                  <strong>Grade:</strong> {{ wrestler.grade }}th<br />
+                  <strong>Division:</strong> {{ wrestler.division }}<br />
+                  <strong>Level:</strong> {{ wrestler.level }}
+                </div>
+                <div class="col-6">
+                  {% if wrestler.show_record %}
+                  <strong>Record:</strong> {{ wrestler.wins or 0 }}-{{
+                  wrestler.losses or 0 }}<br />
+                  {% if wrestler.wins + wrestler.losses > 0 %}
+                  <strong>Win Rate:</strong> {{ "%.1f"|format((wrestler.wins /
+                  (wrestler.wins + wrestler.losses)) * 100) }}%<br />
+                  {% endif %} {% endif %} {% if wrestler.home_town and
+                  wrestler.home_state %}
+                  <strong>Hometown:</strong> {{ wrestler.home_town }}, {{
+                  wrestler.home_state }} {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% if wrestler.show_biography and wrestler.biography %}
+          <div class="mb-3">
+            <h6 style="color: #ff6b35">Biography</h6>
+            <p>{{ wrestler.biography }}</p>
+          </div>
+          {% endif %} {% if wrestler.show_achievements and wrestler.achievements
+          and wrestler.achievements|length > 0 %}
+          <div class="mb-3">
+            <h6 style="color: #ff6b35">Achievements</h6>
+            <ul class="list-unstyled">
+              {% for achievement in wrestler.achievements %}
+              <li>
+                <i class="fas fa-medal text-warning me-2"></i>{{ achievement }}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %} {% if wrestler.show_collegiate_aspirations and
+          wrestler.collegiate_aspirations %}
+          <div class="mb-3">
+            <h6 style="color: #ff6b35">Collegiate Aspirations</h6>
+            <p>{{ wrestler.collegiate_aspirations }}</p>
+          </div>
+          {% endif %} {% if wrestler.track_wrestling_url %}
+          <div class="text-center">
+            <a
+              href="{{ wrestler.track_wrestling_url }}"
+              target="_blank"
+              class="btn btn-outline-primary"
+            >
+              <i class="fas fa-external-link-alt me-2"></i>Track Wrestling
+              Profile
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Staff Modals -->
+  {% for coach in staff %}
+  <div
+    class="modal fade"
+    id="staffModal{{ coach.id }}"
+    tabindex="-1"
+    aria-labelledby="staffModalLabel{{ coach.id }}"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div
+          class="modal-header"
+          style="background-color: #1a1a2e; color: white"
+        >
+          <h5 class="modal-title" id="staffModalLabel{{ coach.id }}">
+            <i class="fas fa-user-tie me-2"></i>{{ coach.first_name }} {{
+            coach.last_name }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            {% if coach.primary_photo_url %}
+            <div class="col-md-4 text-center mb-3">
+              <img
+                src="{{ coach.primary_photo_url }}"
+                class="img-fluid rounded"
+                alt="{{ coach.first_name }} {{ coach.last_name }}"
+              />
+            </div>
+            <div class="col-md-8">
+              {% else %}
+              <div class="col-12">
+                {% endif %}
+                <h6 style="color: #1a1a2e">
+                  {% if coach.role == 'head_coach' %}Head Wrestling Coach {%
+                  elif coach.role == 'assistant_coach' %}Associate Head
+                  Coach/Recruiting Coordinator {% elif coach.role == 'manager'
+                  %}Team Manager {% elif coach.role == 'medical' %}Medical Staff
+                  {% elif coach.role == 'athletic_director' %}Athletic Director
+                  {% else %}{{ coach.role|title }} {% endif %}
+                </h6>
+
+                {% if coach.show_years_coaching and coach.years_coaching %}
+                <p>
+                  <strong>Years Coaching:</strong> {{ coach.years_coaching }}
+                </p>
+                {% endif %} {% if coach.email %}
+                <p>
+                  <strong>Email:</strong>
+                  <a href="mailto:{{ coach.email }}">{{ coach.email }}</a>
+                </p>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if coach.show_biography and coach.biography %}
+            <div class="mt-3">
+              <h6 style="color: #1a1a2e">Biography</h6>
+              <p>{{ coach.biography }}</p>
+            </div>
+            {% endif %} {% if coach.show_wrestling_history and
+            coach.wrestling_history %}
+            <div class="mt-3">
+              <h6 style="color: #1a1a2e">Wrestling Background</h6>
+              <p>{{ coach.wrestling_history }}</p>
+            </div>
+            {% endif %} {% if coach.show_achievements and coach.achievements and
+            coach.achievements|length > 0 %}
+            <div class="mt-3">
+              <h6 style="color: #1a1a2e">Achievements</h6>
+              <ul class="list-unstyled">
+                {% for achievement in coach.achievements %}
+                <li>
+                  <i class="fas fa-trophy text-warning me-2"></i>{{ achievement
+                  }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <style>
+      .wrestler-item:hover {
+        background-color: #f8f9fa;
+        transition: background-color 0.2s;
+      }
+
+      .wrestler-photo {
+        border: 2px solid #ff6b35;
+      }
+
+      .badge-weight {
+        font-size: 0.75rem;
+      }
+
+      @media (max-width: 768px) {
+        .wrestler-item .row {
+          text-align: center;
+        }
+
+        .wrestler-item .col-lg-3:nth-child(3) {
+          margin-top: 10px;
+        }
+      }
+    </style>
+
+    <script>
+      // Filter functionality
+      function filterRoster(filter) {
+        const cards = document.querySelectorAll(".wrestler-card");
+        const buttons = document.querySelectorAll(".btn-group .btn");
+
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        event.target.classList.add("active");
+
+        cards.forEach((card) => {
+          if (filter === "all" || card.dataset.filter === filter) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // Sort functionality
+      function sortRoster(sortBy) {
+        const container = document.querySelector(".card-body");
+        const items = Array.from(document.querySelectorAll(".wrestler-card"));
+
+        items.sort((a, b) => {
+          let aVal, bVal;
+          switch (sortBy) {
+            case "name":
+              aVal = a.dataset.name.toLowerCase();
+              bVal = b.dataset.name.toLowerCase();
+              break;
+            case "weight":
+              aVal = parseInt(a.dataset.weight.match(/\d+/)?.[0] || 0);
+              bVal = parseInt(b.dataset.weight.match(/\d+/)?.[0] || 0);
+              break;
+            case "grade":
+              aVal = parseInt(a.dataset.grade);
+              bVal = parseInt(b.dataset.grade);
+              break;
+            default:
+              return 0;
+          }
+
+          if (sortBy === "weight" || sortBy === "grade") {
+            return aVal - bVal;
+          } else {
+            return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+          }
+        });
+
+        // Re-append sorted items
+        items.forEach((item) => container.appendChild(item));
+      }
+    </script>
+    {% endblock %}
+  </div>
+</div>

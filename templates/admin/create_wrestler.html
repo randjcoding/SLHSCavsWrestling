@@ -1,0 +1,226 @@
+{% extends "base.html" %} {% block title %}{{ title }}{% endblock %} {% block
+content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('admin_roster') }}">Roster</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('admin_wrestlers') }}">Wrestlers</a>
+          </li>
+          <li class="breadcrumb-item active">Create Wrestler</li>
+        </ol>
+      </nav>
+      <h1 class="h3 mb-0">
+        <i class="fas fa-plus text-success me-2"></i>Add New Wrestler
+      </h1>
+      <p class="text-muted">Create a new wrestler profile</p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Wrestler Information</h5>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">First Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="first_name"
+                  name="first_name"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Last Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="last_name"
+                  name="last_name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="division" class="form-label">Division *</label>
+                <select
+                  class="form-control"
+                  id="division"
+                  name="division"
+                  required
+                >
+                  <option value="">Select Division</option>
+                  {% for division in divisions %}
+                  <option value="{{ division.division }}" 
+                      {% if division.division == 'NC High School Boys' %}selected{% endif %}>
+                      {% if 'Boys' in division.division %}
+                      Boys{% if 'Middle School' in division.division %} (Middle School)
+                      {% elif 'High School' in division.division %} (High School)
+                      {% endif %}
+                      {% elif 'Girls' in division.division %}
+                      Girls{% if 'Middle School' in division.division %} (Middle School)
+                      {% elif 'High School' in division.division %} (High School)
+                      {% endif %}
+                      {% else %}
+                      {{ division.division }}
+                      {% endif %}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="level" class="form-label">Level *</label>
+                <select class="form-control" id="level" name="level" required>
+                  <option value="">Select Level</option>
+                  <option value="Varsity">Varsity</option>
+                  <option value="JV">JV</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="weight_class_id" class="form-label"
+                  >Weight Class *</label
+                >
+                <select
+                  class="form-control"
+                  id="weight_class_id"
+                  name="weight_class_id"
+                  required
+                >
+                  <option value="">Select Weight Class</option>
+                  {% for weight_class in weight_classes %}
+                  <option
+                    value="{{ weight_class.id }}"
+                    data-division="{{ weight_class.division }}"
+                    style="display: none;"
+                  >
+                    {{ weight_class.max_weight }}lbs{% if weight_class.level %} ({{ weight_class.level }}){% endif %}
+                  </option>
+                  {% endfor %}
+                </select>
+                <div class="form-text">Weight classes will appear after selecting a division</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="grade" class="form-label">Grade *</label>
+                <select class="form-control" id="grade" name="grade" required>
+                  <option value="">Select Grade</option>
+                  <option value="9">9th Grade</option>
+                  <option value="10">10th Grade</option>
+                  <option value="11">11th Grade</option>
+                  <option value="12">12th Grade</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="rank_in_division" class="form-label"
+                  >Rank in Weight Class</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="rank_in_division"
+                  name="rank_in_division"
+                  value="1"
+                  min="1"
+                />
+                <small class="form-text text-muted"
+                  >Position within the weight class (1 = starter, 2 = backup,
+                  etc.)</small
+                >
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email (Optional)</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                />
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a
+                href="{{ url_for('admin_wrestlers') }}"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-arrow-left me-2"></i>Cancel
+              </a>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Create Wrestler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Note</h5>
+        </div>
+        <div class="card-body">
+          <p class="small text-muted">
+            After creating the wrestler, you can add detailed information like
+            biography, achievements, photos, and contact details through the
+            wrestler management page.
+          </p>
+          <hr />
+          <p class="small">
+            <strong>Required fields:</strong><br />
+            • First & Last Name<br />
+            • Division (Boys/Girls)<br />
+            • Level (Varsity/JV)<br />
+            • Weight Class<br />
+            • Grade
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter weight classes based on selected division
+  document.getElementById("division").addEventListener("change", function () {
+    const selectedDivision = this.value;
+    const weightClassSelect = document.getElementById("weight_class_id");
+    const options = weightClassSelect.querySelectorAll("option");
+
+    options.forEach((option) => {
+      if (option.value === "") {
+        option.style.display = "block";
+      } else {
+        const optionDivision = option.getAttribute("data-division");
+        option.style.display =
+          optionDivision === selectedDivision ? "block" : "none";
+      }
+    });
+
+    // Reset weight class selection
+    weightClassSelect.value = "";
+  });
+</script>
+{% endblock %}
