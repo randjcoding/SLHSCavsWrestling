@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Edit User</h1>
+                    <p class="text-muted">Update user information and role</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Users
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Edit Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit me-2 text-primary"></i>Edit User Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="admin" {{ 'selected' if user.role == 'admin' else '' }}>Admin</option>
+                                <option value="coach" {{ 'selected' if user.role == 'coach' else '' }}>Coach</option>
+                                <option value="assistant_coach" {{ 'selected' if user.role == 'assistant_coach' else '' }}>Assistant Coach</option>
+                                <option value="manager" {{ 'selected' if user.role == 'manager' else '' }}>Manager</option>
+                                <option value="captain" {{ 'selected' if user.role == 'captain' else '' }}>Captain</option>
+                            </select>
+                            <div class="form-text">Choose the appropriate role for this user.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update User
+                            </button>
+                            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Additional Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tools me-2 text-warning"></i>Additional Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('admin_reset_password', user_id=user.id) }}" 
+                               class="btn btn-outline-warning w-100">
+                                <i class="fas fa-key me-2"></i>Reset Password
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('admin_toggle_user_status', user_id=user.id) }}" 
+                               class="btn btn-outline-{{ 'secondary' if user.active else 'success' }} w-100">
+                                <i class="fas fa-toggle-{{ 'off' if user.active else 'on' }} me-2"></i>
+                                {{ 'Deactivate' if user.active else 'Activate' }}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if user.id != session['user_id'] %}
+                    <div class="mt-3 pt-3 border-top">
+                        <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-2"></i>Delete User
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Current Status -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-info"></i>User Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Status:</strong> 
+                            <span class="badge bg-{{ 'success' if user.active else 'secondary' }}">
+                                {{ 'Active' if user.active else 'Inactive' }}
+                            </span>
+                        </li>
+                        <li><strong>Current Role:</strong> 
+                            <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'primary' }}">
+                                {{ user.role.replace('_', ' ').title() }}
+                            </span>
+                        </li>
+                        <li><strong>User ID:</strong> {{ user.id }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+{% if user.id != session['user_id'] %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong>{{ user.first_name }} {{ user.last_name }}</strong> ({{ user.email }})?</p>
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> This action cannot be undone!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{{ url_for('admin_delete_user', user_id=user.id) }}" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>Delete User
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

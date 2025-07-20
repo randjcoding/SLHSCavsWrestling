@@ -1,0 +1,163 @@
+{% extends "base.html" %} {% block content %}
+<div class="container py-4">
+  <!-- Admin Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-0">Admin Dashboard</h1>
+          <p class="text-muted">Welcome back, {{ session['user_name'] }}!</p>
+        </div>
+        <div>
+          <span class="badge bg-primary fs-6 me-2"
+            >{{ session['user_role'].title() }}</span
+          >
+          <a
+            href="{{ url_for('admin_logout') }}"
+            class="btn btn-outline-secondary btn-sm"
+          >
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <!-- Quick Stats -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="display-6 text-primary mb-2">⚔️</div>
+          <h5 class="card-title">Dashboard</h5>
+          <p class="card-text text-muted">Admin control center</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="display-6 text-success mb-2">👥</div>
+          <h5 class="card-title">Team Management</h5>
+          <p class="card-text text-muted">Coming soon</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="display-6 text-warning mb-2">📅</div>
+          <h5 class="card-title">Schedule</h5>
+          <p class="card-text text-muted">Manage matches</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="display-6 text-info mb-2">📊</div>
+          <h5 class="card-title">Statistics</h5>
+          <p class="card-text text-muted">Team performance</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Actions -->
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            {% if session['user_role'] == 'admin' %}
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_users') }}"
+                class="btn btn-outline-primary w-100"
+              >
+                <i class="fas fa-users me-2"></i>Manage Users
+              </a>
+            </div>
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_create_user') }}"
+                class="btn btn-outline-success w-100"
+              >
+                <i class="fas fa-user-plus me-2"></i>Create User
+              </a>
+            </div>
+            {% endif %}
+
+            <div class="col-md-6 mb-3">
+              <a
+                href="{{ url_for('admin_change_password') }}"
+                class="btn btn-outline-warning w-100"
+              >
+                <i class="fas fa-key me-2"></i>Change Password
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a href="#" class="btn btn-outline-info w-100 disabled">
+                <i class="fas fa-calendar me-2"></i>Manage Schedule
+              </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <a href="#" class="btn btn-outline-secondary w-100 disabled">
+                <i class="fas fa-trophy me-2"></i>Team Roster
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">System Info</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            <li><strong>Role:</strong> {{ session['user_role'].title() }}</li>
+            <li><strong>Email:</strong> {{ session['user_email'] }}</li>
+            <li>
+              <strong>Access Level:</strong>
+              {% if session['user_role'] == 'admin' %}
+              <span class="badge bg-danger">Full Access</span>
+              {% elif session['user_role'] == 'coach' %}
+              <span class="badge bg-primary">Coach</span>
+              {% elif session['user_role'] == 'assistant_coach' %}
+              <span class="badge bg-info">Assistant Coach</span>
+              {% elif session['user_role'] == 'manager' %}
+              <span class="badge bg-secondary">Manager</span>
+              {% elif session['user_role'] == 'captain' %}
+              <span class="badge bg-warning">Captain</span>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

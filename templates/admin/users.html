@@ -1,0 +1,228 @@
+{% extends "base.html" %} {% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-0">User Management</h1>
+          <p class="text-muted">Manage administrative users</p>
+        </div>
+        <div>
+          <a href="{{ url_for('admin_create_user') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Create New User
+          </a>
+          <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="btn btn-outline-secondary ms-2"
+          >
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <!-- Users Table -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">All Users</h5>
+    </div>
+    <div class="card-body">
+      {% if users %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Last Login</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>
+                <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                {% if user.id == session['user_id'] %}
+                <span class="badge bg-info ms-2">You</span>
+                {% endif %}
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                {% if user.role == 'admin' %}
+                <span class="badge bg-danger">Admin</span>
+                {% elif user.role == 'coach' %}
+                <span class="badge bg-primary">Coach</span>
+                {% elif user.role == 'assistant_coach' %}
+                <span class="badge bg-info">Assistant Coach</span>
+                {% elif user.role == 'manager' %}
+                <span class="badge bg-secondary">Manager</span>
+                {% elif user.role == 'captain' %}
+                <span class="badge bg-warning">Captain</span>
+                {% endif %}
+              </td>
+              <td>
+                <small
+                  >{{ user.created_at.strftime('%m/%d/%Y') if user.created_at
+                  else 'N/A' }}</small
+                >
+              </td>
+              <td>
+                <small>
+                  {% if user.last_login_at %} {{
+                  user.last_login_at.strftime('%m/%d/%Y %I:%M %p') }} {% else %}
+                  <span class="text-muted">Never</span>
+                  {% endif %}
+                </small>
+              </td>
+              <td>
+                {% if user.active %}
+                <span class="badge bg-success">Active</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <!-- Edit User -->
+                  <a
+                    href="{{ url_for('admin_edit_user', user_id=user.id) }}"
+                    class="btn btn-outline-primary btn-sm"
+                    title="Edit User"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+
+                  <!-- Reset Password -->
+                  <a
+                    href="{{ url_for('admin_reset_password', user_id=user.id) }}"
+                    class="btn btn-outline-warning btn-sm"
+                    title="Reset Password"
+                  >
+                    <i class="fas fa-key"></i>
+                  </a>
+
+                  {% if user.id != session['user_id'] %}
+                  <!-- Toggle Status -->
+                  <a
+                    href="{{ url_for('admin_toggle_user_status', user_id=user.id) }}"
+                    class="btn btn-outline-{{ 'secondary' if user.active else 'success' }} btn-sm"
+                    title="{{ 'Deactivate' if user.active else 'Activate' }} User"
+                    onclick="return confirm('Are you sure you want to {{ 'deactivate' if user.active else 'activate' }} this user?')"
+                  >
+                    <i
+                      class="fas fa-toggle-{{ 'off' if user.active else 'on' }}"
+                    ></i>
+                  </a>
+
+                  <!-- Delete User -->
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Delete User"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal{{ user.id }}"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-4">
+        <div class="display-6 text-muted mb-3">👥</div>
+        <h5>No Users Found</h5>
+        <p class="text-muted">Get started by creating your first user.</p>
+        <a href="{{ url_for('admin_create_user') }}" class="btn btn-primary">
+          <i class="fas fa-user-plus me-2"></i>Create User
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modals -->
+{% if users %} {% for user in users %} {% if user.id != session['user_id'] %}
+<div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete user:</p>
+        <div class="alert alert-info">
+          <strong>{{ user.first_name }} {{ user.last_name }}</strong><br />
+          <small>{{ user.email }}</small><br />
+          <span
+            class="badge bg-{{ 'danger' if user.role == 'admin' else 'primary' }}"
+          >
+            {{ user.role.replace('_', ' ').title() }}
+          </span>
+        </div>
+        <div class="alert alert-danger">
+          <strong>Warning:</strong> This action cannot be undone!
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <a
+          href="{{ url_for('admin_delete_user', user_id=user.id) }}"
+          class="btn btn-danger"
+        >
+          <i class="fas fa-trash me-2"></i>Delete User
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} {% endfor %} {% endif %}
+
+<style>
+  .btn-group .btn {
+    border-radius: 0.375rem !important;
+    margin-right: 2px;
+  }
+  .btn-group .btn:last-child {
+    margin-right: 0;
+  }
+  .table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+  }
+  .table td {
+    vertical-align: middle;
+  }
+</style>
+{% endblock %}

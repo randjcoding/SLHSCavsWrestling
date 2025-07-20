@@ -1,0 +1,180 @@
+{% extends "base.html" %} {% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-0">Create New User</h1>
+          <p class="text-muted">Add a new administrative user</p>
+        </div>
+        <div>
+          <a
+            href="{{ url_for('admin_users') }}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="fas fa-arrow-left me-1"></i>Back to Users
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <!-- Create User Form -->
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">User Information</h5>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="first_name"
+                  name="first_name"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="last_name"
+                  name="last_name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                required
+              />
+              <div class="form-text">
+                This will be used for login authentication.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+                minlength="8"
+              />
+              <div class="form-text">
+                Minimum 8 characters. User can change this after first login.
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="role" class="form-label">Role</label>
+              <select class="form-select" id="role" name="role" required>
+                <option value="">Select a role...</option>
+                <option value="admin">Admin (Full Access)</option>
+                <option value="coach">Coach</option>
+                <option value="assistant_coach">Assistant Coach</option>
+                <option value="manager">Manager</option>
+                <option value="captain">Captain</option>
+              </select>
+              <div class="form-text">
+                <strong>Admin:</strong> Full system access |
+                <strong>Coach:</strong> Team management |
+                <strong>Assistant Coach:</strong> Limited team access |
+                <strong>Manager:</strong> Administrative tasks |
+                <strong>Captain:</strong> Basic access
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a
+                href="{{ url_for('admin_users') }}"
+                class="btn btn-outline-secondary me-md-2"
+                >Cancel</a
+              >
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Create User
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Role Permissions Info -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <h6 class="mb-0">Role Permissions</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-danger">Admin</h6>
+              <ul class="small text-muted">
+                <li>Full system access</li>
+                <li>User management</li>
+                <li>System configuration</li>
+                <li>All content management</li>
+              </ul>
+
+              <h6 class="text-primary">Coach</h6>
+              <ul class="small text-muted">
+                <li>Team roster management</li>
+                <li>Schedule management</li>
+                <li>Match results</li>
+                <li>Wrestler profiles</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-info">Assistant Coach</h6>
+              <ul class="small text-muted">
+                <li>View team information</li>
+                <li>Limited roster editing</li>
+                <li>Match results entry</li>
+              </ul>
+
+              <h6 class="text-secondary">Manager</h6>
+              <ul class="small text-muted">
+                <li>Administrative tasks</li>
+                <li>Content updates</li>
+                <li>Basic team information</li>
+              </ul>
+
+              <h6 class="text-warning">Captain</h6>
+              <ul class="small text-muted">
+                <li>Basic team access</li>
+                <li>Limited content editing</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -86,3 +86,5 @@ yarn-error.log*
 # Digital Ocean Spaces keys
 *.spaces-key
 spaces-config.json 
+
+generate_hashes.py
