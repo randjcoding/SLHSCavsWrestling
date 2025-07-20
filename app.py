@@ -962,7 +962,7 @@ def admin_weight_classes():
             SELECT division, 
                    COUNT(*) as weight_class_count,
                    MIN(max_weight) as min_weight,
-                   MAX(max_weight) as max_weight_limit
+                   MAX(max_weight) as max_weight
             FROM weightClasses 
             WHERE active = TRUE 
             GROUP BY division 
