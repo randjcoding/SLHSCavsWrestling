@@ -1,6 +1,10 @@
 # Archive folder - don't push development files
 archive/
 
+# All markdown and SQL files (contain sensitive information)
+*.md
+*.sql
+
 # Server documentation (contains sensitive information)
 serverCreation.md
 
