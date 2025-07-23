@@ -1,0 +1,25 @@
+[Unit]
+Description=SLHS Wrestling Flask Application
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=exec
+User=root
+Group=root
+WorkingDirectory=/var/www/SLHSCavsWrestling
+Environment=PATH=/var/www/SLHSCavsWrestling/venv/bin
+ExecStart=/var/www/SLHSCavsWrestling/venv/bin/gunicorn --config gunicorn.conf.py app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=10
+KillMode=mixed
+TimeoutStopSec=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=slhs-wrestling
+
+[Install]
+WantedBy=multi-user.target 
