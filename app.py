@@ -145,10 +145,6 @@ def roster(year_id=None):
             
             staff.append(staff_dict)
         
-        # Get all weight classes for lookups
-        cursor.execute("SELECT id, name, max_weight, division, level FROM weightClasses")
-        all_weight_classes = {wc['id']: dict(wc) for wc in cursor.fetchall()}
-        
         # Get wrestlers for the selected year
         cursor.execute("""
             SELECT w.id, w.first_name, w.last_name, w.division, w.level, w.rank_in_division,
@@ -156,7 +152,7 @@ def roster(year_id=None):
                    wc.name as weight_class_name, wc.max_weight,
                    wd.biography, wd.achievements, wd.collegiate_aspirations, wd.role,
                    wd.primary_photo_url, wd.secondary_photo_url, wd.show_in_modal,
-                   wd.home_town, wd.home_state, wd.track_wrestling_url, wd.divisions_wrestled
+                   wd.home_town, wd.home_state, wd.track_wrestling_url
             FROM wrestlers w
             LEFT JOIN weightClasses wc ON w.weight_class_id = wc.id
             LEFT JOIN wrestlerDetails wd ON w.id = wd.wrestler_id
@@ -175,89 +171,18 @@ def roster(year_id=None):
             else:
                 wrestler_dict['achievements'] = []
             
-            # Parse divisions_wrestled JSON field and enrich with weight class data
-            if wrestler_dict.get('divisions_wrestled'):
-                wrestler_dict['divisions_wrestled'] = wrestler_dict['divisions_wrestled'] if isinstance(wrestler_dict['divisions_wrestled'], list) else []
-                
-                # Enrich each weight class entry with actual weight data
-                enriched_divisions = []
-                for weight_class_entry in wrestler_dict['divisions_wrestled']:
-                    if isinstance(weight_class_entry, dict) and weight_class_entry.get('weight_class_id'):
-                        weight_class_id = int(weight_class_entry['weight_class_id'])
-                        weight_class_data = all_weight_classes.get(weight_class_id)
-                        
-                        if weight_class_data:
-                            enriched_entry = dict(weight_class_entry)
-                            enriched_entry['weight_class_name'] = weight_class_data['name']
-                            enriched_entry['max_weight'] = weight_class_data['max_weight']
-                            enriched_entry['weight_class_level'] = weight_class_data['level']
-                            # Use the division from the weight class data if not set
-                            if not enriched_entry.get('division'):
-                                enriched_entry['division'] = weight_class_data['division']
-                            enriched_divisions.append(enriched_entry)
-                        else:
-                            # Keep original entry if weight class not found
-                            enriched_divisions.append(weight_class_entry)
-                    else:
-                        # Keep entries that don't have weight_class_id
-                        enriched_divisions.append(weight_class_entry)
-                
-                wrestler_dict['divisions_wrestled'] = enriched_divisions
-            else:
-                wrestler_dict['divisions_wrestled'] = []
-            
-            # Parse modal settings - handle all display preferences  
+            # Parse modal settings
             modal_settings = wrestler_dict.get('show_in_modal', {})
             if isinstance(modal_settings, dict):
-                # Basic Information
-                wrestler_dict['show_record'] = modal_settings.get('record', True)
-                wrestler_dict['show_email'] = modal_settings.get('email', False)  # Default to false per user request
-                wrestler_dict['show_grade'] = modal_settings.get('grade', True)
-                wrestler_dict['show_phone_number'] = modal_settings.get('phone_number', False)  # Default to false per user request
-                
-                # Wrestling Information
-                wrestler_dict['show_weight_class'] = modal_settings.get('weight_class', True)
-                wrestler_dict['show_division'] = modal_settings.get('division', True)
-                wrestler_dict['show_level'] = modal_settings.get('level', True)
-                wrestler_dict['show_rank_in_division'] = modal_settings.get('rank_in_division', True)
-                wrestler_dict['show_weight_classes_wrestled'] = modal_settings.get('weight_classes_wrestled', True)
-                
-                # Personal & Contact
-                wrestler_dict['show_home_town'] = modal_settings.get('home_town', True)
-                wrestler_dict['show_home_state'] = modal_settings.get('home_state', True)
-                wrestler_dict['show_address'] = modal_settings.get('address', True)
-                wrestler_dict['show_city'] = modal_settings.get('city', True)
-                wrestler_dict['show_state'] = modal_settings.get('state', True)
-                wrestler_dict['show_zip_code'] = modal_settings.get('zip_code', True)
-                
-                # Wrestling Details
-                wrestler_dict['show_track_wrestling_id'] = modal_settings.get('track_wrestling_id', True)
-                wrestler_dict['show_track_wrestling_url'] = modal_settings.get('track_wrestling_url', True)
                 wrestler_dict['show_biography'] = modal_settings.get('biography', True)
                 wrestler_dict['show_achievements'] = modal_settings.get('achievements', True)
                 wrestler_dict['show_collegiate_aspirations'] = modal_settings.get('collegiate_aspirations', True)
+                wrestler_dict['show_record'] = modal_settings.get('record', True)
             else:
-                # Default values if no modal settings exist
-                wrestler_dict['show_record'] = True
-                wrestler_dict['show_email'] = False
-                wrestler_dict['show_grade'] = True
-                wrestler_dict['show_phone_number'] = False
-                wrestler_dict['show_weight_class'] = True
-                wrestler_dict['show_division'] = True
-                wrestler_dict['show_level'] = True
-                wrestler_dict['show_rank_in_division'] = True
-                wrestler_dict['show_weight_classes_wrestled'] = True
-                wrestler_dict['show_home_town'] = True
-                wrestler_dict['show_home_state'] = True
-                wrestler_dict['show_address'] = True
-                wrestler_dict['show_city'] = True
-                wrestler_dict['show_state'] = True
-                wrestler_dict['show_zip_code'] = True
-                wrestler_dict['show_track_wrestling_id'] = True
-                wrestler_dict['show_track_wrestling_url'] = True
                 wrestler_dict['show_biography'] = True
                 wrestler_dict['show_achievements'] = True
                 wrestler_dict['show_collegiate_aspirations'] = True
+                wrestler_dict['show_record'] = True
             
             wrestlers.append(wrestler_dict)
         
@@ -797,7 +722,7 @@ def admin_staff():
             LEFT JOIN staffDetails sd ON s.id = sd.staff_id
             LEFT JOIN years y ON s.year_id = y.id
             ORDER BY y.start_year DESC, 
-                CASE s.role 
+               CASE s.role 
                     WHEN 'head_coach' THEN 1
                     WHEN 'assistant_coach' THEN 2
                     WHEN 'manager' THEN 3
@@ -846,7 +771,7 @@ def admin_create_wrestler():
                 flash('Required fields: First Name, Last Name, Weight Class, Division, Level, Grade', 'error')
                 return redirect(url_for('admin_create_wrestler'))
             
-            # Get current year
+            # Get ent year
             cursor.execute("SELECT id FROM years WHERE is_current = TRUE LIMIT 1")
             current_year = cursor.fetchone()
             if not current_year:
@@ -972,89 +897,35 @@ def admin_edit_wrestler(wrestler_id):
             conn = get_db_connection()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            # Build selective update for wrestlers table - only update provided fields
-            wrestler_updates = []
-            wrestler_params = []
+            # Get form data
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            weight_class_id = request.form.get('weight_class_id')
+            division = request.form.get('division')
+            level = request.form.get('level')
+            rank_in_division = request.form.get('rank_in_division', 1)
+            grade = request.form.get('grade')
+            email = request.form.get('email')
+            wins = request.form.get('wins', 0)
+            losses = request.form.get('losses', 0)
             
-            # Handle required fields (must have values)
-            if request.form.get('first_name'):
-                wrestler_updates.append("first_name = %s")
-                wrestler_params.append(request.form.get('first_name'))
-            
-            if request.form.get('last_name'):
-                wrestler_updates.append("last_name = %s")
-                wrestler_params.append(request.form.get('last_name'))
-                
-            if request.form.get('division'):
-                wrestler_updates.append("division = %s")
-                wrestler_params.append(request.form.get('division'))
-                
-            if request.form.get('level'):
-                wrestler_updates.append("level = %s")
-                wrestler_params.append(request.form.get('level'))
-                
-            if request.form.get('grade'):
-                wrestler_updates.append("grade = %s")
-                wrestler_params.append(int(request.form.get('grade')))
-            
-            # Handle optional fields
-            if request.form.get('weight_class_id'):
-                wrestler_updates.append("weight_class_id = %s")
-                wrestler_params.append(int(request.form.get('weight_class_id')))
-                
-            if request.form.get('rank_in_division'):
-                wrestler_updates.append("rank_in_division = %s")
-                wrestler_params.append(int(request.form.get('rank_in_division')))
-                
-            if request.form.get('email'):
-                wrestler_updates.append("email = %s")
-                wrestler_params.append(request.form.get('email'))
-                
-            if request.form.get('wins'):
-                wrestler_updates.append("wins = %s")
-                wrestler_params.append(int(request.form.get('wins')))
-                
-            if request.form.get('losses'):
-                wrestler_updates.append("losses = %s")
-                wrestler_params.append(int(request.form.get('losses')))
-            
-            # Always update modified timestamp
-            wrestler_updates.append("modified_at = CURRENT_TIMESTAMP")
-            
-            # Get detail fields for wrestlerDetails table
-            detail_fields = {
-                'biography': request.form.get('biography'),
-                'track_wrestling_id': request.form.get('track_wrestling_id'),
-                'track_wrestling_url': request.form.get('track_wrestling_url'),
-                'address': request.form.get('address'),
-                'city': request.form.get('city'),
-                'state': request.form.get('state'),
-                'zip_code': request.form.get('zip_code'),
-                'phone_number': request.form.get('phone_number'),
-                'role': request.form.get('role') or 'wrestler',
-                'collegiate_aspirations': request.form.get('collegiate_aspirations'),
-                'home_town': request.form.get('home_town'),
-                'home_state': request.form.get('home_state') or 'NC'
-            }
+            # Detail fields
+            biography = request.form.get('biography')
+            track_wrestling_id = request.form.get('track_wrestling_id')
+            track_wrestling_url = request.form.get('track_wrestling_url')
+            address = request.form.get('address')
+            city = request.form.get('city')
+            state = request.form.get('state', 'NC')
+            zip_code = request.form.get('zip_code')
+            phone_number = request.form.get('phone_number')
+            role = request.form.get('role', 'wrestler')
+            collegiate_aspirations = request.form.get('collegiate_aspirations')
+            home_town = request.form.get('home_town')
+            home_state = request.form.get('home_state', 'NC')
             
             # Handle JSONB fields
-            weight_class_divisions = request.form.getlist('weight_class_division[]')
-            weight_class_ids = request.form.getlist('weight_class_id[]')
+            divisions_wrestled = request.form.getlist('divisions_wrestled[]')
             achievements = request.form.getlist('achievements[]')
-            
-            # Build weight classes wrestled structure
-            divisions_wrestled = []
-            for i, division in enumerate(weight_class_divisions):
-                if division and i < len(weight_class_ids) and weight_class_ids[i]:
-                    # Get weight class info
-                    cursor.execute("SELECT max_weight, name FROM weightClasses WHERE id = %s", (weight_class_ids[i],))
-                    weight_class_info = cursor.fetchone()
-                    if weight_class_info:
-                        divisions_wrestled.append({
-                            'division': division,
-                            'weight_class_id': int(weight_class_ids[i]),
-                            'weight_class': f"{weight_class_info['max_weight']}lbs"
-                        })
             
             # Modal display settings
             show_record = request.form.get('show_record') == 'true'
@@ -1069,106 +940,50 @@ def admin_edit_wrestler(wrestler_id):
                 'collegiate_aspirations': show_collegiate_aspirations
             }
             
-            # Update wrestler main table - only update provided fields
-            if wrestler_updates:
-                wrestler_params.append(wrestler_id)  # Add wrestler_id for WHERE clause
-                update_sql = f"""
-                    UPDATE wrestlers SET {', '.join(wrestler_updates)}
-                    WHERE id = %s
-                """
-                cursor.execute(update_sql, wrestler_params)
+            # Update wrestler main table
+            cursor.execute("""
+                UPDATE wrestlers SET 
+                    first_name = %s, last_name = %s, weight_class_id = %s, 
+                    division = %s, level = %s, rank_in_division = %s, 
+                    grade = %s, email = %s, wins = %s, losses = %s,
+                    modified_at = CURRENT_TIMESTAMP
+                WHERE id = %s
+            """, (first_name, last_name, weight_class_id, division, level, 
+                  rank_in_division, grade, email, wins, losses, wrestler_id))
             
-            # Build selective update for wrestlerDetails - only update provided fields
-            detail_updates = []
-            detail_params = []
-            
-            # Handle detail fields that have values
-            for field, value in detail_fields.items():
-                if value:  # Only update if field has a value
-                    detail_updates.append(f"{field} = %s")
-                    detail_params.append(value)
-            
-            # Handle JSONB fields - Weight Classes Wrestled
-            weight_class_divisions = request.form.getlist('weight_class_division[]')
-            weight_class_ids = request.form.getlist('weight_class_id[]')
-            divisions_wrestled = []
-            
-            # Build weight classes wrestled structure
-            for i, division in enumerate(weight_class_divisions):
-                if division and i < len(weight_class_ids) and weight_class_ids[i]:
-                    # Get weight class info
-                    cursor.execute("SELECT max_weight, name FROM weightClasses WHERE id = %s", (weight_class_ids[i],))
-                    weight_class_info = cursor.fetchone()
-                    if weight_class_info:
-                        divisions_wrestled.append({
-                            'division': division,
-                            'weight_class_id': int(weight_class_ids[i]),
-                            'weight_class': f"{weight_class_info['max_weight']}lbs"
-                        })
-            
-            if divisions_wrestled:  # Only update if weight classes were provided
-                detail_updates.append("divisions_wrestled = %s")
-                detail_params.append(json.dumps(divisions_wrestled))
-                
-            # Handle Achievements
-            achievements = request.form.getlist('achievements[]')
-            achievements = [a for a in achievements if a.strip()]  # Remove empty achievements
-            
-            if achievements:  # Only update if achievements were provided
-                detail_updates.append("achievements = %s")
-                detail_params.append(json.dumps(achievements))
-                
-            # Handle modal display settings - collect all display preferences
-            display_fields = [
-                'show_record', 'show_biography', 'show_achievements', 'show_collegiate_aspirations',
-                'show_email', 'show_grade', 'show_phone_number', 'show_weight_class', 
-                'show_division', 'show_level', 'show_rank_in_division', 'show_weight_classes_wrestled',
-                'show_home_town', 'show_home_state', 'show_address', 'show_city', 
-                'show_state', 'show_zip_code', 'show_track_wrestling_id', 'show_track_wrestling_url'
-            ]
-            
-            # Check if any display settings were provided
-            if any(request.form.get(field) for field in display_fields):
-                show_in_modal = {}
-                for field in display_fields:
-                    # Remove 'show_' prefix for the key name
-                    key = field.replace('show_', '')
-                    show_in_modal[key] = request.form.get(field) == 'true'
-                
-                detail_updates.append("show_in_modal = %s")
-                detail_params.append(json.dumps(show_in_modal))
-            
-            # Always update modified timestamp if we have updates
-            if detail_updates:
-                detail_updates.append("modified_at = CURRENT_TIMESTAMP")
-            
-            # Check if wrestlerDetails record exists
-            cursor.execute("SELECT id FROM wrestlerDetails WHERE wrestler_id = %s", (wrestler_id,))
-            details_exists = cursor.fetchone()
-            
-            if detail_updates:
-                if details_exists:
-                    # Update existing record
-                    detail_params.append(wrestler_id)
-                    update_sql = f"""
-                        UPDATE wrestlerDetails SET {', '.join(detail_updates)}
-                        WHERE wrestler_id = %s
-                    """
-                    cursor.execute(update_sql, detail_params)
-                else:
-                    # Create new record with only provided fields
-                    cursor.execute("INSERT INTO wrestlerDetails (wrestler_id) VALUES (%s)", (wrestler_id,))
-                    # Then update with provided fields
-                    if len(detail_updates) > 1:  # More than just modified_at
-                        detail_params.append(wrestler_id)
-                        update_sql = f"""
-                            UPDATE wrestlerDetails SET {', '.join(detail_updates)}
-                            WHERE wrestler_id = %s
-                        """
-                        cursor.execute(update_sql, detail_params)
+            # Update wrestler details (upsert)
+            cursor.execute("""
+                INSERT INTO wrestlerDetails (
+                    wrestler_id, biography, divisions_wrestled, track_wrestling_id,
+                    track_wrestling_url, address, city, state, zip_code, 
+                    phone_number, role, achievements, collegiate_aspirations,
+                    home_town, home_state, show_in_modal, modified_at
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                ) ON CONFLICT (wrestler_id) DO UPDATE SET
+                    biography = EXCLUDED.biography,
+                    divisions_wrestled = EXCLUDED.divisions_wrestled,
+                    track_wrestling_id = EXCLUDED.track_wrestling_id,
+                    track_wrestling_url = EXCLUDED.track_wrestling_url,
+                    address = EXCLUDED.address,
+                    city = EXCLUDED.city,
+                    state = EXCLUDED.state,
+                    zip_code = EXCLUDED.zip_code,
+                    phone_number = EXCLUDED.phone_number,
+                    role = EXCLUDED.role,
+                    achievements = EXCLUDED.achievements,
+                    collegiate_aspirations = EXCLUDED.collegiate_aspirations,
+                    home_town = EXCLUDED.home_town,
+                    home_state = EXCLUDED.home_state,
+                    show_in_modal = EXCLUDED.show_in_modal,
+                    modified_at = CURRENT_TIMESTAMP
+            """, (wrestler_id, biography, json.dumps(divisions_wrestled), track_wrestling_id,
+                  track_wrestling_url, address, city, state, zip_code, phone_number,
+                  role, json.dumps(achievements), collegiate_aspirations, home_town,
+                  home_state, json.dumps(show_in_modal)))
             
             conn.commit()
-            flash('Wrestler updated successfully!', 'success')
+            flash(f'Wrestler {first_name} {last_name} updated successfully!', 'success')
             return redirect(url_for('admin_wrestlers'))
             
         except Exception as e:
@@ -1203,28 +1018,10 @@ def admin_edit_wrestler(wrestler_id):
             
         # Convert to dict and handle JSONB fields
         wrestler_dict = dict(wrestler)
-        
-        # Handle divisions_wrestled (weight classes) - support both old and new format
-        divisions_wrestled = wrestler_dict.get('divisions_wrestled', [])
-        if not isinstance(divisions_wrestled, list):
-            divisions_wrestled = []
-        
-        # Convert old format (strings) to new format (objects) if needed
-        formatted_divisions_wrestled = []
-        for item in divisions_wrestled:
-            if isinstance(item, str):
-                # Old format - just division name, convert to object format
-                formatted_divisions_wrestled.append({
-                    'division': item,
-                    'weight_class_id': '',
-                    'weight_class': '',
-                    'weight_class_name': ''
-                })
-            elif isinstance(item, dict):
-                # New format - already an object
-                formatted_divisions_wrestled.append(item)
-        
-        wrestler_dict['divisions_wrestled'] = formatted_divisions_wrestled
+        if wrestler_dict.get('divisions_wrestled'):
+            wrestler_dict['divisions_wrestled'] = wrestler_dict['divisions_wrestled'] if isinstance(wrestler_dict['divisions_wrestled'], list) else []
+        else:
+            wrestler_dict['divisions_wrestled'] = []
             
         if wrestler_dict.get('achievements'):
             wrestler_dict['achievements'] = wrestler_dict['achievements'] if isinstance(wrestler_dict['achievements'], list) else []
@@ -1260,18 +1057,18 @@ def admin_edit_staff(staff_id):
             conn = get_db_connection()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            # Get form data and convert empty strings to None for proper null handling
-            first_name = request.form.get('first_name') or None
-            last_name = request.form.get('last_name') or None
-            role = request.form.get('role') or None
-            email = request.form.get('email') or None
-            phone_number = request.form.get('phone_number') or None
+            # Get form data
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            role = request.form.get('role')
+            email = request.form.get('email')
+            phone_number = request.form.get('phone_number')
             
-            # Detail fields - convert empty strings to None
-            biography = request.form.get('biography') or None
-            wrestling_history = request.form.get('wrestling_history') or None
-            years_coaching = int(request.form.get('years_coaching') or 0)
-            education = request.form.get('education') or None
+            # Detail fields
+            biography = request.form.get('biography')
+            wrestling_history = request.form.get('wrestling_history')
+            years_coaching = request.form.get('years_coaching', 0)
+            education = request.form.get('education')
             
             # Handle JSONB fields
             certifications = request.form.getlist('certifications[]')
