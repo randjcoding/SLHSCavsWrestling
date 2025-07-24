@@ -12,13 +12,6 @@ set -e  # Exit on any error
 echo "🤼 Setting up slhscavswrestling.com domain..."
 echo "=============================================="
 
-# Check if running as root
-if [[ $EUID -eq 0 ]]; then
-   echo "❌ This script should NOT be run as root"
-   echo "Run it as your regular user (it will ask for sudo when needed)"
-   exit 1
-fi
-
 # Get server IP for display
 SERVER_IP=$(curl -s ifconfig.me 2>/dev/null || wget -qO- ifconfig.me 2>/dev/null || echo "Unable to detect")
 echo "📍 Your server IP is: $SERVER_IP"
@@ -26,16 +19,16 @@ echo ""
 
 # Step 1: Install nginx
 echo "📦 Installing nginx..."
-sudo apt update
-sudo apt install nginx -y
+apt update
+apt install nginx -y
 
 # Step 2: Stop nginx to configure it
 echo "⏹️  Stopping nginx for configuration..."
-sudo systemctl stop nginx
+systemctl stop nginx
 
 # Step 3: Create nginx configuration for your domain
 echo "⚙️  Creating nginx configuration..."
-sudo tee /etc/nginx/sites-available/slhscavswrestling.com > /dev/null << 'EOF'
+tee /etc/nginx/sites-available/slhscavswrestling.com > /dev/null << 'EOF'
 server {
     listen 80;
     server_name slhscavswrestling.com www.slhscavswrestling.com;
@@ -92,15 +85,15 @@ EOF
 
 # Step 4: Enable the site
 echo "🔗 Enabling the site..."
-sudo ln -sf /etc/nginx/sites-available/slhscavswrestling.com /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/slhscavswrestling.com /etc/nginx/sites-enabled/
 
 # Step 5: Remove default nginx site
 echo "🗑️  Removing default nginx site..."
-sudo rm -f /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/sites-enabled/default
 
 # Step 6: Test nginx configuration
 echo "🧪 Testing nginx configuration..."
-if sudo nginx -t; then
+if nginx -t; then
     echo "✅ Nginx configuration is valid!"
 else
     echo "❌ Nginx configuration has errors!"
@@ -112,7 +105,7 @@ echo "⚙️  Updating Flask app settings..."
 cd /var/www/SLHSCavsWrestling
 
 # Create/update .env file
-sudo tee .env > /dev/null << EOF
+tee .env > /dev/null << EOF
 FLASK_DEBUG=False
 FLASK_HOST=127.0.0.1
 FLASK_PORT=5000
@@ -125,23 +118,23 @@ echo "✅ Updated .env file with production settings"
 
 # Step 8: Update firewall
 echo "🔥 Configuring firewall..."
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
 echo "✅ Opened ports 80 (HTTP) and 443 (HTTPS)"
 
 # Step 9: Start and enable services
 echo "🚀 Starting services..."
-sudo systemctl start nginx
-sudo systemctl enable nginx
-sudo systemctl restart slhs-wrestling
+systemctl start nginx
+systemctl enable nginx
+systemctl restart slhs-wrestling
 
 # Step 10: Check service status
 echo ""
 echo "📊 Checking service status..."
 echo "Nginx status:"
-sudo systemctl is-active nginx
+systemctl is-active nginx
 echo "Flask app status:"
-sudo systemctl is-active slhs-wrestling
+systemctl is-active slhs-wrestling
 
 # Step 11: Test local connections
 echo ""
@@ -190,11 +183,11 @@ echo "   TTL: 600"
 echo ""
 echo "💡 HELPFUL COMMANDS:"
 echo "==================="
-echo "Check nginx status:     sudo systemctl status nginx"
-echo "Check app status:       sudo systemctl status slhs-wrestling"
-echo "View nginx logs:        sudo tail -f /var/log/nginx/slhscavswrestling.com.access.log"
-echo "View app logs:          sudo journalctl -u slhs-wrestling -f"
-echo "Restart everything:     sudo systemctl restart nginx slhs-wrestling"
+echo "Check nginx status:     systemctl status nginx"
+echo "Check app status:       systemctl status slhs-wrestling"
+echo "View nginx logs:        tail -f /var/log/nginx/slhscavswrestling.com.access.log"
+echo "View app logs:          journalctl -u slhs-wrestling -f"
+echo "Restart everything:     systemctl restart nginx slhs-wrestling"
 echo ""
 echo "🔍 TEST YOUR DOMAIN:"
 echo "==================="
