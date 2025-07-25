@@ -106,7 +106,7 @@ def roster(year_id=None):
                    sd.show_in_modal, sd.certifications, sd.education, sd.specialties,
                    sp.photo_url as primary_photo_url
             FROM staff s
-            LEFT JOIN staffDetails sd ON s.id = sd.staff_id
+            LEFT JOIN staffdetails sd ON s.id = sd.staff_id
             LEFT JOIN staffPhotos sp ON s.id = sp.staff_id AND sp.photo_type = 'primary'
             WHERE s.active = TRUE AND (s.year_id = %s OR %s IS NULL)
             ORDER BY 
@@ -155,7 +155,7 @@ def roster(year_id=None):
                    wd.home_town, wd.home_state, wd.track_wrestling_url
             FROM wrestlers w
             LEFT JOIN weightClasses wc ON w.weight_class_id = wc.id
-            LEFT JOIN wrestlerDetails wd ON w.id = wd.wrestler_id
+            LEFT JOIN wrestlerdetails wd ON w.id = wd.wrestler_id
             WHERE w.active = TRUE AND (w.year_id = %s OR %s IS NULL)
             ORDER BY w.division, w.level, wc.max_weight, w.rank_in_division
         """, (current_year_id, current_year_id))
@@ -683,7 +683,7 @@ def admin_wrestlers():
                    y.school_year
             FROM wrestlers w
             LEFT JOIN weightClasses wc ON w.weight_class_id = wc.id
-            LEFT JOIN wrestlerDetails wd ON w.id = wd.wrestler_id
+            LEFT JOIN wrestlerdetails wd ON w.id = wd.wrestler_id
             LEFT JOIN years y ON w.year_id = y.id
             ORDER BY y.start_year DESC, w.division, w.level, wc.max_weight, w.rank_in_division
         """)
@@ -791,7 +791,7 @@ def admin_create_wrestler():
             
             # Create wrestler details record
             cursor.execute("""
-                INSERT INTO wrestlerDetails (wrestler_id) VALUES (%s)
+                INSERT INTO wrestlerdetails (wrestler_id) VALUES (%s)
             """, (wrestler_id,))
             
             conn.commit()
@@ -869,7 +869,7 @@ def admin_create_staff():
             
             # Create staff details record
             cursor.execute("""
-                INSERT INTO staffDetails (staff_id) VALUES (%s)
+                INSERT INTO staffdetails (staff_id) VALUES (%s)
             """, (staff_id,))
             
             conn.commit()
@@ -953,11 +953,11 @@ def admin_edit_wrestler(wrestler_id):
             
             # Update wrestler details (upsert)
             cursor.execute("""
-                INSERT INTO wrestlerDetails (
+                INSERT INTO wrestlerdetails (
                     wrestler_id, biography, divisions_wrestled, track_wrestling_id,
                     track_wrestling_url, address, city, state, zip_code, 
                     phone_number, role, achievements, collegiate_aspirations,
-                    home_town, home_state, show_in_modal, modified_at
+                    home_town, home_state, show_in_modal
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) ON CONFLICT (wrestler_id) DO UPDATE SET
@@ -1005,7 +1005,7 @@ def admin_edit_wrestler(wrestler_id):
             SELECT w.*, wd.*, y.school_year,
                    wc.name as weight_class_name, wc.max_weight as weight_limit
             FROM wrestlers w
-            LEFT JOIN wrestlerDetails wd ON w.id = wd.wrestler_id
+            LEFT JOIN wrestlerdetails wd ON w.id = wd.wrestler_id
             LEFT JOIN years y ON w.year_id = y.id
             LEFT JOIN weightClasses wc ON w.weight_class_id = wc.id
             WHERE w.id = %s
@@ -1098,7 +1098,7 @@ def admin_edit_staff(staff_id):
             
             # Update staff details (upsert)
             cursor.execute("""
-                INSERT INTO staffDetails (
+                INSERT INTO staffdetails (
                     staff_id, biography, wrestling_history, years_coaching,
                     certifications, achievements, education, specialties,
                     show_in_modal, modified_at
